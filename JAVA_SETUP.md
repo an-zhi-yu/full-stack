@@ -1,0 +1,176 @@
+# Mac 上 Java 开发环境与 Cursor 使用指南
+
+## 仓库里的 Java 示例放在哪？
+
+Java 学习与示例统一放在 **full-stack/java/** 下，按主题分子目录：
+
+- **java/basics/**：入门与基础（变量、控制流、数组、字符串、数值、对象、Stream），即原来的 HelloWorld 内容，已改名为 basics 更贴切。
+- 后续可加 **java/collections/**、**java/io/** 等，每个子目录一个主题、各自一个 `src/`。
+
+文档与规范放在仓库根目录（或 **docs/**），见 **REPO_STRUCTURE.md**。
+
+---
+
+## 一、在 Mac 上安装 JDK 17
+
+### 为什么推荐 Temurin？Temurin 和 OpenJDK 有什么区别？
+
+- **OpenJDK** 是 Java 的「参考实现」：一个开源的、标准的 JDK 源码项目。任何人都可以基于它做自己的发行版。
+- **Temurin**（全名 Eclipse Temurin）是 **基于 OpenJDK 的一个发行版**，由 Eclipse 基金会（Adoptium 项目）维护，完全免费、开源，通过兼容性测试，在 Mac/Linux/Windows 上都很常用。所以我们说「装 Temurin」本质上还是在用 OpenJDK，只是带了官方构建、签名和长期支持。
+- **为什么 OpenJDK 也可以？** 因为 Temurin 本身就是 OpenJDK 的一种发行版。用 `brew install openjdk@17` 装的是 Homebrew 自己构建的 OpenJDK，也是开源免费的，功能上和你写代码、运行 Hello World 没有区别。
+- **小结**：  
+  - **Temurin@17**：推荐，Eclipse 官方构建、兼容性有保障，安装后 PATH 通常自动配好。  
+  - **OpenJDK@17**：完全可以，同样是 OpenJDK，只是构建方是 Homebrew，有时需要自己把 `bin` 加到 PATH。  
+  两者对新手来说选一个即可，都能用来学 Java、运行本仓库里的程序。
+
+### 方法 1：Homebrew + Temurin（推荐）
+
+1. **安装 Homebrew**（若尚未安装）：
+   ```bash
+   /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. **安装 JDK 17（Eclipse Temurin）**：
+   ```bash
+   brew install --cask temurin@17
+   ```
+
+3. **验证安装**：
+   ```bash
+   java -version
+   javac -version
+   ```
+   应看到版本为 17.x。
+
+### 方法 2：Homebrew + OpenJDK
+
+```bash
+brew install openjdk@17
+```
+
+安装后若 `java` 找不到，可把 OpenJDK 加入 PATH（安装完成时终端会提示路径），例如：
+```bash
+echo 'export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 方法 3：官网下载
+
+- **Oracle JDK 17**：https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html  
+- **Eclipse Temurin（Adoptium）**：https://adoptium.net/  
+
+下载 `.dmg`，安装后通常会自动配置好。
+
+---
+
+## 二、安装 IntelliJ IDEA
+
+1. **官网下载**：https://www.jetbrains.com/idea/download/#section=mac  
+   - Community 版免费，日常学习足够。
+
+2. **或用 Homebrew 安装**：
+   ```bash
+   brew install --cask intellij-idea-ce
+   ```
+
+3. **用 IDEA 建第一个 Java 项目并运行 Hello World**：
+   - 打开 IDEA → **New Project** → 选 **Java**，JDK 选 17，项目名如 `HelloWorld`。
+   - 在 `src` 下右键 → **New → Java Class**，类名 `Main`。
+   - 在类里写：
+     ```java
+     public static void main(String[] args) {
+         System.out.println("Hello, World!");
+     }
+     ```
+   - 点击 `main` 方法左侧的绿色运行按钮即可运行。
+
+---
+
+## 三、在 Cursor 里开发 Java
+
+**可以。** Cursor 基于 VS Code，通过安装 Java 相关扩展即可开发、运行、调试 Java。
+
+### 1. 安装扩展
+
+在 Cursor 中按 `Cmd+Shift+X` 打开扩展，搜索并安装：
+
+- **Extension Pack for Java**（Microsoft）  
+  包含：Language Support、Debugger、Maven、Gradle、Test Runner 等，装这一个通常就够用。
+
+可选：
+
+- **Project Manager for Java**（便于管理多模块项目）
+
+### 2. 用本仓库里的 Java 基础示例
+
+示例在 **java/basics** 下：
+
+```
+java/basics/
+  src/
+    Main.java, Run.java, BasicsDemo.java, ArrayDemo.java, ...
+```
+
+**在终端运行（需先安装好 JDK 17）**：
+
+```bash
+cd full-stack/java/basics
+javac src/Main.java -d out
+java -cp out Main
+```
+
+应输出：`Hello, World!`
+
+### 3. 在 Cursor 里运行
+
+1. 用 Cursor 打开文件夹：**File → Open Folder**，选 **java/basics**（或 full-stack 再进入 java/basics）。
+2. 安装好 **Extension Pack for Java** 后，打开 `src/Main.java`。
+3. 在 `main` 方法上方会出现 **Run | Debug**，点击 **Run** 即可运行。
+4. 若提示选择 JDK，选你安装的 JDK 17。
+
+### 4. 若要用 Maven/Gradle（可选，新手可跳过）
+
+**Maven 和 Gradle 是什么？**  
+它们是 Java 的「构建工具」：帮你自动完成「编译、下载依赖库、打包、跑测试」等。  
+- 当前只有一个 `Main.java` 时，用 `javac` 和 `java` 就够，**不需要** Maven/Gradle。  
+- 等以后项目变大、要引入别人写的库（如网络请求、数据库驱动）时，再用 Maven 或 Gradle 会更方便。  
+所以文档里写「若要用」是给以后准备的，你现在可以忽略。
+
+- **Maven**：在项目根目录执行 `mvn archetype:generate` 按提示创建项目，然后用 Cursor 打开该目录。
+- **Gradle**：用 `gradle init` 创建项目，再用 Cursor 打开。
+
+装好 **Extension Pack for Java** 后，Cursor 会自动识别 Maven/Gradle 项目并提供运行、测试、调试。
+
+---
+
+## 四、小结
+
+| 需求           | 做法 |
+|----------------|------|
+| 安装 JDK 17    | `brew install --cask temurin@17` |
+| 安装 IntelliJ  | 官网下载或 `brew install --cask intellij-idea-ce` |
+| 在 Cursor 写 Java | 安装 **Extension Pack for Java**，打开项目文件夹即可编辑、运行、调试 |
+
+本仓库中的 **java/basics** 可直接在 Cursor 中打开并运行，用于验证环境是否正常。
+
+---
+
+## 五、新手常见概念（对应 Main.java）
+
+### 类名和文件名为什么必须一致？
+
+Java 规定：**如果一个类是 `public`，它的名字必须和文件名完全一致**。  
+所以 `public class Main` 必须在文件 `Main.java` 里。这样 JVM 和 IDE 才能根据文件名找到这个类。
+
+### main 方法是「默认执行」的吗？
+
+可以这么理解，更准确的说法是：**main 是 Java 程序唯一的标准入口**。  
+你运行 `java Main` 时，JVM 会去找类 `Main` 里的 `public static void main(String[] args)` 并执行它。  
+没有这个方法，程序就「没有入口」，不能直接运行；有多个类时，你也要指定「从哪个类的 main 开始跑」。
+
+### 关于 println 括号里出现的 `x:`
+
+在 Cursor/VS Code 里写 `System.out.println("Hello");` 时，有时会看到参数被显示成 `x: "Hello"`。  
+**这个 `x:` 不是 Java 的语法**，是 IDE 的「参数提示」：用来告诉你「这里填的是方法的第几个参数」。  
+- 你**不要**在代码里自己写 `x:`，只写 `System.out.println("Hello, World!");` 即可。  
+- 用 `javac` 编译时也不会出现 `x:`，只有 IDE 为了可读性会显示。如果觉得干扰，可以在编辑器设置里关掉「Parameter Hints」。

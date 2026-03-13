@@ -1,0 +1,10 @@
+# Java 编译产物（提交到仓库时不需要）
+*.class
+out/
+
+# IDE
+.idea/
+*.iml
+
+# 系统文件
+.DS_Store
