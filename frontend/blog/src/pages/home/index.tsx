@@ -1,12 +1,13 @@
 /**
  * 首页（Home）
- * 布局：Hero → Stats → 精选文章 → 技术分类 → 最新文章
+ * 布局：Hero → Stats → 精选文章 → 技术分类 → 最新文章 → 数据看板
  * 数据全部来自静态数据层 @/data
  */
 import { Link } from 'react-router-dom'
 import { Tag } from 'antd'
 import { categories } from '@/data/categories'
 import { getRecentPosts, getFeaturedPosts } from '@/data/posts/index'
+import { DashboardCharts } from './components/DashboardCharts.tsx'
 import styles from './index.module.less'
 
 // ── 静态数据 ──────────────────────────────────────────────────
@@ -158,6 +159,14 @@ export default function Home() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* 数据看板 */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>📈 数据看板</h2>
+          </div>
+          <DashboardCharts />
         </section>
 
       </div>

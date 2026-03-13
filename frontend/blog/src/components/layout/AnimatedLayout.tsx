@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { HeaderBar } from './HeaderBar'
+import { HeaderBar } from './HeaderBar.tsx'
 import styles from './AnimatedLayout.module.less'
 
 interface AnimatedLayoutProps {
