@@ -7,10 +7,26 @@
  * 【对象】根据类 new 出来的具体实例。
  * 【构造方法】与类同名、无返回类型，用于在 new 时初始化对象。可重载（不同参数列表）。
  * 【封装】用 private 修饰字段，外部不能直接访问；通过 public 的 getter/setter 读写，便于校验与维护。
+ *
+ * 【为什么这里都是 public 没有 static？】
+ * - 构造方法不能加 static，因为构造方法就是用来「创建对象」的，必须和对象绑定。
+ * - getter/setter 是「实例方法」：要针对某一个 Book 对象（this）操作，所以不用 static。用 static 就变成「属于类」、无法访问 this.title，所以必须是普通实例方法。
+ * - public 表示「对外可见」，这样别的类才能 new Book(...)、调用 b.getTitle() 等。
+ *
+ * 【为什么有两个 Book()？】
+ * - 这叫「构造方法重载」：方法名相同（都是 Book）、参数列表不同。根据你 new 时传不传参、传几个参，Java 自动选一个匹配的构造方法。
+ * - new Book("Java", "作者", 99.0) → 调用带三个参数的构造方法。
+ * - new Book() → 调用无参构造方法。
+ *
+ * 通俗版（四种写法 + 前端类比）：见仓库 docs/static与包-通俗解释.md
  */
 public class Book {
 
-    // ----- 私有字段（封装）：外部不能直接 book.title，必须通过 getTitle() / setTitle() -----
+    /*
+     * 【为什么字段用 private？】
+     * - 不想让外部直接访问（如 book.title = null），避免随意改坏数据。通过 getter/setter 可以在 set 里做校验（如价格不能为负）。
+     * 【访问修饰符有哪些？各自特点见类末尾注释表】
+     */
     private String title;
     private String author;
     private double price;
@@ -26,7 +42,8 @@ public class Book {
     }
 
     /**
-     * 【构造方法重载】无参构造，方便先创建对象再通过 setter 赋值。
+     * 【构造方法重载】无参构造。new Book() 时调用这个；new Book("a","b",1.0) 时调用上面那个。
+     * 有参数就用上面的，没有参数就用这个。
      */
     public Book() {
         this.title = "";
@@ -65,4 +82,17 @@ public class Book {
     public String toString() {
         return "Book{title='" + title + "', author='" + author + "', price=" + price + "}";
     }
+
+    /*
+     * 【访问修饰符小结】
+     * ┌──────────┬─────────────────────────────────────────────────────────┐
+     * │ 修饰符    │ 谁可以访问                                                │
+     * ├──────────┼─────────────────────────────────────────────────────────┤
+     * │ public   │ 任意类（同一包、其他包都能访问）                              │
+     * │ protected│ 本类 + 同包类 + 子类（不同包里的子类也可以）                   │
+     * │ 不写(默认) │ 本类 + 同包类（俗称「包私有」package-private）               │
+     * │ private  │ 仅本类内部                                                 │
+     * └──────────┴─────────────────────────────────────────────────────────┘
+     * 字段常用 private 封装；对外暴露用 public 方法（如 getter/setter）。构造方法一般 public，否则外部无法 new。
+     */
 }

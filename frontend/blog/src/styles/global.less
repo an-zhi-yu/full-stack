@@ -1,0 +1,151 @@
+// ============================================================
+// 全局样式
+// 包含：CSS 主题变量（亮/暗双主题）、基础重置、全局动画、滚动条
+// variables.less 由 vite.config.ts additionalData 自动注入，无需手动 @import
+// ============================================================
+
+// ── 深色主题（默认）─────────────────────────────────────────
+:root {
+  // 背景层次
+  --color-bg:          #0f0f1a;
+  --color-bg-card:     #16162a;
+  --color-bg-elevated: #1e1e34;
+  --color-bg-code:     #0d0d1a;    // 代码块专用背景（两种模式都保持深色）
+
+  // 表面层（半透明卡片/玻璃效果）
+  --color-surface:        rgba(255, 255, 255, 0.04);
+  --color-surface-raised: rgba(255, 255, 255, 0.07);
+
+  // 主色
+  --color-primary:      #6366f1;
+  --color-primary-glow: rgba(99, 102, 241, 0.35);
+
+  // 文字（从深到浅 5 级）
+  --color-text:           rgba(255, 255, 255, 0.92);  // 标题、主要内容
+  --color-text-body:      rgba(255, 255, 255, 0.82);  // 正文、段落
+  --color-text-secondary: rgba(255, 255, 255, 0.58);  // 副标题、描述
+  --color-text-muted:     rgba(255, 255, 255, 0.40);  // 辅助信息
+  --color-text-faint:     rgba(255, 255, 255, 0.25);  // 极淡（序号、分隔符）
+
+  // 边框
+  --color-border:        rgba(255, 255, 255, 0.09);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+
+  // 字体
+  --font-sans: @font-sans;
+  --font-mono: @font-mono;
+
+  // 背景光晕（Hero）
+  --bg-glow-top:    rgba(99, 102, 241, 0.35);
+  --bg-glow-bottom: rgba(99, 102, 241, 0.12);
+}
+
+// ── 亮色主题覆盖 ──────────────────────────────────────────
+// App.tsx 在 dark=false 时给 <html> 设置 data-theme="light"
+[data-theme="light"] {
+  --color-bg:          #f8fafc;
+  --color-bg-card:     #ffffff;
+  --color-bg-elevated: #f1f5f9;
+  --color-bg-code:     #1e293b;    // 保持代码块深色，利于阅读
+
+  --color-surface:        rgba(15, 23, 42, 0.04);
+  --color-surface-raised: rgba(15, 23, 42, 0.07);
+
+  --color-primary-glow: rgba(99, 102, 241, 0.18);
+
+  --color-text:           rgba(15, 23, 42, 0.92);
+  --color-text-body:      rgba(15, 23, 42, 0.78);
+  --color-text-secondary: rgba(15, 23, 42, 0.58);
+  --color-text-muted:     rgba(15, 23, 42, 0.42);
+  --color-text-faint:     rgba(15, 23, 42, 0.26);
+
+  --color-border:        rgba(15, 23, 42, 0.11);
+  --color-border-subtle: rgba(15, 23, 42, 0.06);
+
+  --bg-glow-top:    rgba(99, 102, 241, 0.10);
+  --bg-glow-bottom: rgba(99, 102, 241, 0.05);
+}
+
+// ── 基础重置 ──────────────────────────────────────────────────
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, var(--bg-glow-top), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, var(--bg-glow-bottom), transparent);
+  transition: background-color @trans-slow, color @trans-slow;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+// ── 全局动画关键帧 ────────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes floatBlob {
+  0%, 100% { transform: translateY(0)    scale(1); }
+  50%       { transform: translateY(24px) scale(1.06); }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0%   50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+// ── 全局工具类 ────────────────────────────────────────────────
+.page-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+// ── 行内代码（ContentRenderer dangerouslySetInnerHTML 注入）──
+// 全局 class，不能放在 CSS Module 里
+.inline-code {
+  font-family: @font-mono;
+  font-size: 0.875em;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: #a5b4fc;
+  white-space: nowrap;
+}
+
+// ── 自定义滚动条 ──────────────────────────────────────────────
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--color-bg-elevated); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+  &:hover { background: var(--color-primary); }
+}

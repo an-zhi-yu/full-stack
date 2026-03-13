@@ -1,0 +1,14 @@
+// 整体布局：Header + 内容区
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  // 背景色由 body 的 CSS 变量控制，此处透明
+  background: transparent;
+}
+
+.content {
+  flex: 1;
+  // 页面进入动画
+  animation: fadeIn 0.3s ease both;
+}

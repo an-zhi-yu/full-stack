@@ -1,0 +1,252 @@
+// 关于我页样式
+.page { min-height: 100vh; }
+
+// ─── Hero ────────────────────────────────────────────────────
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 72px @space-lg 64px;
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 50%, var(--bg-glow-top), transparent),
+    radial-gradient(ellipse 40% 40% at 80% 50%, rgba(168, 85, 247, 0.08), transparent);
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: @space-xl;
+  .fade-up();
+}
+
+.avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+  border: 2px solid rgba(99,102,241,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .avatarEmoji { font-size: 3rem; }
+}
+
+.heroText { flex: 1; }
+
+.name {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+
+  .nameSub {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+}
+
+.role {
+  font-size: 14px;
+  color: #818cf8;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.bio {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.9;
+  margin: 0 0 16px;
+}
+
+.tagRow { display: flex; flex-wrap: wrap; gap: 6px; }
+
+// ─── 主体内容 ────────────────────────────────────────────────
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: @space-xl @space-lg 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 52px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 @space-lg;
+}
+
+// ─── 博客目标卡片 ────────────────────────────────────────────
+.goalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.goalCard {
+  display: flex;
+  gap: 14px;
+  padding: 20px;
+  .glass-card();
+  border-radius: @radius-lg;
+  transition: border-color @trans-normal;
+  &:hover { border-color: rgba(99,102,241,0.3); }
+
+  .goalIcon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+
+  .goalTitle {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 6px;
+  }
+
+  .goalDesc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+}
+
+// ─── 技能进度条 ─────────────────────────────────────────────
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 32px;
+}
+
+.skillItem {
+  .skillName {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+  }
+}
+
+// ─── 工具标签 ────────────────────────────────────────────────
+.toolTags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.toolTag {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 13px !important;
+  padding: 4px 12px !important;
+  border-radius: @radius-full !important;
+  transition: border-color @trans-fast, color @trans-fast;
+
+  &:hover {
+    border-color: rgba(99,102,241,0.4) !important;
+    color: #818cf8 !important;
+  }
+}
+
+// ─── 学习路线 ────────────────────────────────────────────────
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 28px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 8px; bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(99,102,241,0.5), rgba(99,102,241,0.08));
+  }
+}
+
+.roadItem {
+  position: relative;
+  padding: 0 0 28px 20px;
+
+  &.done .roadDot {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34,197,94,0.45);
+    border-color: #22c55e;
+  }
+}
+
+.roadDot {
+  position: absolute;
+  left: -22px; top: 4px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  border: 2px solid rgba(99,102,241,0.5);
+}
+
+.roadContent { display: flex; flex-direction: column; gap: 4px; }
+
+.roadLabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #818cf8;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.roadTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.roadDesc { font-size: 13px; color: var(--color-text-muted); }
+
+// ─── 底部 CTA ────────────────────────────────────────────────
+.cta {
+  text-align: center;
+  padding: @space-xl;
+  .glass-card();
+  border-radius: @radius-lg;
+
+  p { color: var(--color-text-secondary); margin-bottom: @space-md; }
+
+  .ctaBtn {
+    display: inline-block;
+    padding: 11px 28px;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: #fff;
+    border-radius: @radius;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform @trans-fast, box-shadow @trans-normal;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(99,102,241,0.45);
+      color: #fff;
+    }
+  }
+}
+
+@media (max-width: @bp-mobile) {
+  .hero { padding: 48px @space-md 40px; }
+  .heroInner { flex-direction: column; align-items: center; text-align: center; }
+  .tagRow { justify-content: center; }
+  .main { padding: @space-xl @space-md 60px; gap: 40px; }
+  .goalGrid, .skillGrid { grid-template-columns: 1fr; }
+}

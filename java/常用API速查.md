@@ -99,7 +99,9 @@
 | 文件 | 内容 | 运行命令 |
 |------|------|----------|
 | BasicsDemo.java | 变量、类型、if/for/while | `javac src/BasicsDemo.java -d out && java -cp out BasicsDemo` |
-| ArrayDemo.java | 数组、Arrays、Stream | `javac src/ArrayDemo.java -d out && java -cp out ArrayDemo` |
+| ArrayDemo.java | 数组、Arrays、Stream（求最大最小值用 ArrayUtils） | `javac src/ArrayUtils.java src/ArrayDemo.java -d out && java -cp out ArrayDemo` |
+| ArrayUtils.java | 工具类：findMax/findMin（类似前端 utils） | 被 ArrayDemo、MethodDemo 调用 |
+| MethodDemo.java | 方法种类与修饰符整理 + 示例 | `javac src/ArrayUtils.java src/MethodDemo.java -d out && java -cp out MethodDemo` |
 | StringDemo.java | 字符串常用 API | `javac src/StringDemo.java -d out && java -cp out StringDemo` |
 | NumberDemo.java | 数值、Math、包装类 | `javac src/NumberDemo.java -d out && java -cp out NumberDemo` |
 | ObjectDemo.java | 对象、equals/toString | `javac src/ObjectDemo.java -d out && java -cp out ObjectDemo` |

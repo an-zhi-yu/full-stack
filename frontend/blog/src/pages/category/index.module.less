@@ -1,0 +1,136 @@
+// 分类页样式
+.page { min-height: 80vh; }
+
+.catHeader {
+  position: relative;
+  overflow: hidden;
+  padding: 60px @space-lg 48px;
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -80px; top: 50%;
+    transform: translateY(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, var(--cat-color, #6366f1), transparent 65%);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+}
+
+.catHeaderInner {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  .fade-up();
+}
+
+.catIcon { font-size: 3.5rem; line-height: 1; }
+
+.catName {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 8px;
+}
+
+.catDesc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0 0 10px;
+}
+
+.catCount {
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: @radius-full;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  color: #818cf8;
+}
+
+.content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: @space-xl @space-lg 80px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: @space-sm;
+  padding: @space-lg;
+  .glass-card();
+  border-radius: @radius-lg;
+  text-decoration: none;
+  .card-hover();
+
+  .cardTop { min-height: 20px; }
+  .pin { font-size: 11px; color: rgba(202, 138, 4, 0.75); }
+
+  .cardTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .cardSub {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 0;
+    flex: 1;
+    .text-clamp(2);
+    line-height: 1.6;
+  }
+
+  .cardTags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+  .tag {
+    font-size: 11px !important;
+    background: rgba(99, 102, 241, 0.10) !important;
+    border-color: rgba(99, 102, 241, 0.22) !important;
+    color: #818cf8 !important;
+  }
+
+  .cardMeta {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--color-text-muted);
+
+  p { margin-bottom: @space-md; }
+
+  .backLink {
+    color: #818cf8;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+@media (max-width: @bp-mobile) {
+  .catHeader { padding: 40px @space-md 36px; }
+  .catHeaderInner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .content { padding: @space-xl @space-md 60px; }
+  .grid { grid-template-columns: 1fr; }
+}

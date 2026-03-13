@@ -1,0 +1,181 @@
+// ============================================================
+// 文章内容渲染器样式
+// 代码块始终保持深色背景（var(--color-bg-code)），两种主题均可读
+// ============================================================
+
+.content {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--color-text-body);
+
+  // ─── 标题 ─────────────────────────────────────────────────
+  .h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 2.2em 0 0.7em;
+    padding-bottom: 0.4em;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    scroll-margin-top: 80px;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1.1em;
+      background: linear-gradient(180deg, #6366f1, #a855f7);
+      border-radius: 2px;
+      margin-right: 10px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+  }
+
+  .h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 1.8em 0 0.5em;
+    color: var(--color-text);
+    scroll-margin-top: 80px;
+  }
+
+  // ─── 段落 ─────────────────────────────────────────────────
+  .p {
+    margin: 0 0 1.1em;
+    color: var(--color-text-body);
+  }
+
+  // ─── 代码块（始终深色） ───────────────────────────────────
+  .codeBlock {
+    margin: 1.4em 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.07);   // 深色边框，与深色背景搭配
+    background: var(--color-bg-code);
+
+    .codeCaption {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .codeLang {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(99, 102, 241, 0.22);
+      border-radius: 4px;
+      color: #818cf8;
+      font-family: @font-mono;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .pre {
+      margin: 0;
+      padding: 20px;
+      overflow-x: auto;
+      background: var(--color-bg-code);
+    }
+
+    .code {
+      font-family: @font-mono;
+      font-size: 0.875rem;
+      line-height: 1.75;
+      color: #e2e8f0;      // 始终浅色字体（深色背景上）
+      white-space: pre;
+      tab-size: 4;
+    }
+  }
+
+  // ─── 列表 ─────────────────────────────────────────────────
+  .list {
+    margin: 0.6em 0 1.2em;
+    padding-left: 1.5em;
+    color: var(--color-text-body);
+
+    .li {
+      margin-bottom: 0.4em;
+      line-height: 1.7;
+      &::marker { color: #6366f1; }
+    }
+  }
+
+  // ─── Callout ──────────────────────────────────────────────
+  .callout {
+    margin: 1.4em 0;
+    padding: 14px 18px;
+    border-radius: @radius;
+    border-left: 3px solid;
+
+    &.calloutTip  { background: rgba(99, 102, 241, 0.08);  border-color: #6366f1; }
+    &.calloutWarn { background: rgba(245, 158, 11, 0.08);  border-color: #f59e0b; }
+
+    .calloutTitle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--color-text);
+      margin-bottom: 6px;
+    }
+
+    .calloutText {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+    }
+  }
+
+  // ─── 表格 ─────────────────────────────────────────────────
+  .tableWrap {
+    overflow-x: auto;
+    margin: 1.4em 0;
+    border-radius: @radius;
+    border: 1px solid var(--color-border);
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .th {
+      background: rgba(99, 102, 241, 0.08);
+      color: var(--color-text);
+      font-weight: 600;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    .tr {
+      &:nth-child(even) { background: var(--color-surface); }
+      &:hover           { background: rgba(99, 102, 241, 0.05); }
+    }
+
+    .td {
+      padding: 9px 14px;
+      color: var(--color-text-secondary);
+      border-bottom: 1px solid var(--color-border-subtle);
+      vertical-align: top;
+    }
+  }
+
+  // ─── 分割线 ───────────────────────────────────────────────
+  .hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2em 0;
+  }
+}

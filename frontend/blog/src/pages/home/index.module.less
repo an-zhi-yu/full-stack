@@ -1,0 +1,386 @@
+// 首页样式 - 全部使用 CSS 变量，自动适配亮/暗主题
+.page { min-height: 100vh; }
+
+// ─── Hero ────────────────────────────────────────────────────
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 96px @space-lg 80px;
+  text-align: center;
+}
+
+.blobs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.5;
+
+  &.blob1 {
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, #6366f1, transparent 70%);
+    top: -120px; left: 50%;
+    transform: translateX(-50%);
+    animation: floatBlob 9s ease-in-out infinite;
+  }
+  &.blob2 {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, #a855f7, transparent 70%);
+    top: 40px; right: 8%;
+    animation: floatBlob 12s ease-in-out infinite reverse;
+  }
+  &.blob3 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, #3b82f6, transparent 70%);
+    bottom: 0; left: 10%;
+    animation: floatBlob 10s ease-in-out 3s infinite;
+  }
+}
+
+// 亮色主题降低光球亮度
+[data-theme="light"] .blob { opacity: 0.18; }
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: @radius-full;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #818cf8;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  margin-bottom: @space-lg;
+  .fade-up();
+}
+
+.heroTitle {
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-text);
+  margin: 0 0 20px;
+  .fade-up(0.1s);
+}
+
+.gradientText {
+  .gradient-text();
+  background-size: 200% 200%;
+  animation: gradientShift 5s ease infinite;
+}
+
+.heroSub {
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  line-height: 1.9;
+  margin-bottom: 36px;
+  .fade-up(0.2s);
+}
+
+.heroCtas {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  .fade-up(0.3s);
+}
+
+.ctaPrimary {
+  display: inline-block;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #fff;
+  border-radius: @radius;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  transition: transform @trans-fast, box-shadow @trans-normal;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.55);
+    color: #fff;
+  }
+}
+
+.ctaSecondary {
+  display: inline-block;
+  padding: 12px 28px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  border-radius: @radius;
+  font-weight: 500;
+  font-size: 15px;
+  text-decoration: none;
+  background: var(--color-surface);
+  backdrop-filter: blur(6px);
+  transition: border-color @trans-normal, color @trans-normal, background @trans-normal;
+
+  &:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.08);
+  }
+}
+
+// ─── 统计栏 ──────────────────────────────────────────────────
+.stats {
+  display: flex;
+  justify-content: center;
+  max-width: 720px;
+  margin: 0 auto 56px;
+  .glass-card();
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.statItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px @space-md;
+  border-right: 1px solid var(--color-border-subtle);
+  gap: 4px;
+  &:last-child { border-right: none; }
+}
+
+.statVal {
+  font-size: 1.8rem;
+  font-weight: 700;
+  .gradient-text();
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+// ─── 主体 ────────────────────────────────────────────────────
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 @space-lg 80px;
+  display: flex;
+  flex-direction: column;
+  gap: @space-2xl;
+}
+
+// ─── Section 通用 ────────────────────────────────────────────
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: @space-lg;
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.more {
+  font-size: 13px;
+  color: #818cf8;
+  text-decoration: none;
+  transition: color @trans-fast;
+  &:hover { color: #6366f1; }
+}
+
+// ─── 精选文章卡片 ─────────────────────────────────────────────
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.featuredCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: @space-lg;
+  .glass-card();
+  border-radius: @radius-lg;
+  text-decoration: none;
+  .card-hover();
+
+  .cardCategory {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #818cf8;
+    font-weight: 600;
+  }
+
+  .cardTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .cardSub {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 0;
+    flex: 1;
+    .text-clamp(2);
+    line-height: 1.6;
+  }
+
+  .cardMeta {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+
+  .cardTags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .tag { font-size: 11px !important; }
+}
+
+// ─── 分类卡片 ─────────────────────────────────────────────────
+.catGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.catCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px;
+  .glass-card();
+  border-radius: @radius-lg;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: border-color @trans-normal, transform @trans-fast, box-shadow @trans-normal;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--cat-color, #6366f1), transparent 60%);
+    opacity: 0;
+    transition: opacity @trans-normal;
+  }
+
+  &:hover {
+    border-color: var(--cat-color, #6366f1);
+    transform: translateY(-2px);
+
+    &::before { opacity: 0.07; }
+  }
+
+  .catIcon { font-size: 1.75rem; line-height: 1; flex-shrink: 0; position: relative; z-index: 1; }
+
+  .catName {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .catDesc {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// ─── 最新文章列表 ─────────────────────────────────────────────
+.postList { display: flex; flex-direction: column; gap: 2px; }
+
+.postItem {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background @trans-fast, border-color @trans-normal, transform @trans-fast;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.06);
+    border-color: var(--color-border);
+    transform: translateX(4px);
+
+    .postArrow { color: #818cf8; transform: translateX(4px); }
+  }
+
+  .postIndex {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: rgba(99, 102, 241, 0.22);
+    width: 32px;
+    flex-shrink: 0;
+  }
+
+  .postInfo { flex: 1; min-width: 0; }
+
+  .postTitle {
+    font-size: 0.975rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 4px;
+    .text-ellipsis();
+  }
+
+  .postSub {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    margin-bottom: 6px;
+    .text-ellipsis();
+  }
+
+  .postMeta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--color-text-faint);
+  }
+
+  .postCat { color: #818cf8; font-weight: 500; }
+  .dot     { color: var(--color-border); }
+
+  .postArrow {
+    color: var(--color-text-faint);
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: color @trans-fast, transform @trans-fast;
+  }
+}
+
+// ─── 响应式 ──────────────────────────────────────────────────
+@media (max-width: @bp-mobile) {
+  .hero { padding: 64px @space-md 56px; }
+  .stats { margin: 0 @space-md 40px; }
+  .statVal { font-size: 1.4rem; }
+  .main { padding: 0 @space-md 60px; gap: 48px; }
+  .featuredGrid, .catGrid { grid-template-columns: 1fr; }
+}

@@ -15,7 +15,8 @@
  *   「用一串元素快速构造一个 List」，相当于前端的 [10, 20, 30]。asList 接受可变参数，返回
  *   一个固定大小的 List（底层由数组支持）。所以写 List 的「字面量式」初值，常用 Arrays.asList(...)。
  *
- * 运行：javac src/ArrayDemo.java -d out && java -cp out ArrayDemo
+ * 求最大最小值已挪到工具类 ArrayUtils（类似前端 utils），本类只做数组演示。
+ * 运行：javac src/ArrayUtils.java src/ArrayDemo.java -d out && java -cp out ArrayDemo
  */
 import java.util.Arrays;
 import java.util.List;
@@ -40,9 +41,9 @@ public class ArrayDemo {
         for (int i = 0; i < nums.length; i++) {
             System.out.print(nums[i] + (i < nums.length - 1 ? ", " : "\n"));
         }
-        // 【方法定义与调用】下面定义了 findMax、findMin 两个方法，这里调用它们
-        int max = findMax(nums);
-        int min = findMin(nums);
+        // 【方法定义与调用】工具类 ArrayUtils 里的静态方法，用 类名.方法名(参数) 调用
+        int max = ArrayUtils.findMax(nums);
+        int min = ArrayUtils.findMin(nums);
         System.out.println("最大值: " + max + ", 最小值: " + min);
 
         // ==================== 三、Arrays 工具类（操作数组的常用 API） ====================
@@ -96,28 +97,5 @@ public class ArrayDemo {
         System.out.println("--- ArrayDemo 结束 ---");
     }
 
-    /**
-     * 【方法定义】求整型数组中的最大值。
-     * 格式：修饰符 返回类型 方法名(参数列表) { 方法体 return 返回值; }
-     */
-    static int findMax(int[] arr) {
-        if (arr == null || arr.length == 0) throw new IllegalArgumentException("数组不能为空");
-        int max = arr[0];
-        for (int i = 1; i < arr.length; i++) {
-            if (arr[i] > max) max = arr[i];
-        }
-        return max;
-    }
-
-    /**
-     * 【方法定义】求整型数组中的最小值。
-     */
-    static int findMin(int[] arr) {
-        if (arr == null || arr.length == 0) throw new IllegalArgumentException("数组不能为空");
-        int min = arr[0];
-        for (int i = 1; i < arr.length; i++) {
-            if (arr[i] < min) min = arr[i];
-        }
-        return min;
-    }
+    // findMax/findMin 已移至 ArrayUtils（工具类），见 ArrayUtils.java
 }
