@@ -6,7 +6,7 @@
 
 ## 一、数组（Array）
 
-**示例文件：** `java/basics/src/ArrayDemo.java`（含 Arrays 工具类与 Stream）
+**示例文件：** `java/basics/src/ArrayDemo.java`（含遍历数组、方法定义与调用、求最大最小值、Arrays 工具类与 Stream）
 
 | 用法 | 说明 |
 |------|------|
@@ -103,3 +103,4 @@
 | StringDemo.java | 字符串常用 API | `javac src/StringDemo.java -d out && java -cp out StringDemo` |
 | NumberDemo.java | 数值、Math、包装类 | `javac src/NumberDemo.java -d out && java -cp out NumberDemo` |
 | ObjectDemo.java | 对象、equals/toString | `javac src/ObjectDemo.java -d out && java -cp out ObjectDemo` |
+| Book.java + BookDemo.java | 类、构造方法、封装（private/getter/setter） | `javac src/Book.java src/BookDemo.java -d out && java -cp out BookDemo` |
