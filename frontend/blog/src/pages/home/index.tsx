@@ -3,12 +3,17 @@
  * 布局：Hero → Stats → 精选文章 → 技术分类 → 最新文章 → 数据看板
  * 数据全部来自静态数据层 @/data
  */
+import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
-import { Tag } from 'antd'
+import { Tag, Spin } from 'antd'
 import { categories } from '@/data/categories'
 import { getRecentPosts, getFeaturedPosts } from '@/data/posts/index'
-import { DashboardCharts } from './components/DashboardCharts.tsx'
 import styles from './index.module.less'
+
+// @ant-design/plots 体积较大（~1.5MB），懒加载以拆包，避免影响首屏速度
+const DashboardCharts = lazy(() =>
+  import('./components/DashboardCharts').then((m) => ({ default: m.DashboardCharts }))
+)
 
 // ── 静态数据 ──────────────────────────────────────────────────
 const recentPosts  = getRecentPosts(6)
@@ -166,7 +171,9 @@ export default function Home() {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>📈 数据看板</h2>
           </div>
-          <DashboardCharts />
+          <Suspense fallback={<div style={{ textAlign: 'center', padding: '40px 0' }}><Spin /></div>}>
+            <DashboardCharts />
+          </Suspense>
         </section>
 
       </div>
