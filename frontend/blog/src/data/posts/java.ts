@@ -299,6 +299,33 @@ System.out.println(nums.length);  // 5
 System.out.println(nums[0]);      // 3
 nums[0] = 99;                     // 修改`,
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `5
+3`,
+      },
+      {
+        type: 'heading',
+        level: 3,
+        text: '数组与 List 的几种定义、什么时候用哪种',
+        anchor: 'when-to-use',
+      },
+      {
+        type: 'table',
+        headers: ['写法', '是什么', '什么时候用'],
+        rows: [
+          ['int[] nums = { 1,2,3 }; 或 new int[]{ 1,2,3 }', '数组，长度固定', '元素个数不变、用下标访问、基本类型 int 等时用数组。传参/赋值给变量时必须写 new int[]{ ... }。'],
+          ['List<Integer> list = Arrays.asList(10, 20, 30);', '固定大小的 List，不能 add/remove', '只读、做 Stream、传参给要 List 的 API 时用。不能后续增删元素。'],
+          ['List<String> names = new ArrayList<>();', '可变的 List，可 add/remove', '需要动态增删、存「多条数据」时用。日常业务里最常用。'],
+        ],
+      },
+      {
+        type: 'tip',
+        title: '记忆',
+        text: '数组 = 定长；Arrays.asList = 定长 List（只读）；new ArrayList = 可变 List（增删）。',
+      },
       { type: 'heading', level: 2, text: '二、Arrays 工具类（必会 API）', anchor: 'arrays-api' },
       {
         type: 'code',
@@ -322,6 +349,13 @@ int[] mid    = Arrays.copyOfRange(nums, 1, 4);   // [1, 4, 1]
 
 boolean same = Arrays.equals(nums, copy);         // false`,
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `[3, 1, 4, 1, 5]
+[1, 1, 3, 4, 5]`,
+      },
       { type: 'heading', level: 2, text: '三、数组 → List', anchor: 'to-list' },
       {
         type: 'code',
@@ -338,6 +372,10 @@ String[] arr = { "a", "b", "c" };
 List<String> strList = Arrays.asList(arr);
 
 // ⚠️ asList 返回的 List 大小固定，不能 add / remove`,
+      },
+      {
+        type: 'paragraph',
+        text: '上面 asList 只是把数组或一组元素「包装」成 List 视图，没有运行输出；真正打印或 Stream 时才会看到 [10, 20, 30, 40] 等。',
       },
       { type: 'heading', level: 2, text: '四、Stream API（链式操作）', anchor: 'stream' },
       {
@@ -371,6 +409,17 @@ boolean all = list.stream().allMatch(x -> x > 5);   // true（类似 .every）
 int[] intArr = { 1, 2, 3, 4, 5 };
 int sum  = Arrays.stream(intArr).sum();               // 15
 long cnt = Arrays.stream(intArr).filter(x -> x > 2).count(); // 3`,
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果（big、doubled、has、all、sum、cnt）',
+        code: `big = [30, 40]
+doubled = [20, 40, 60, 80]
+has = true
+all = true
+sum = 15
+cnt = 3`,
       },
       {
         type: 'tip',
@@ -413,6 +462,15 @@ s.contains("Java")      // true     → 是否包含
 s.startsWith("Hello")   // true
 s.endsWith("!")         // true`,
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果（length=12, charAt(7)="J", indexOf=7, contains=true 等）',
+        code: `length() → 12
+charAt(7) → 'J'
+indexOf("Java") → 7
+contains("Java") → true`,
+      },
       { type: 'heading', level: 2, text: '二、截取与拼接', anchor: 'slice-join' },
       {
         type: 'code',
@@ -436,6 +494,16 @@ s.toUpperCase()        // "HELLO, JAVA!"
 "a,b,c".split(",")                          // ["a", "b", "c"]
 String.join("-", "a", "b", "c")            // "a-b-c"`,
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `substring(7) → "Java!"
+substring(7,11) → "Java"
+replace → "Hello, World!"
+trim("  hello  ") → "hello"
+join → "a-b-c"`,
+      },
       { type: 'heading', level: 2, text: '三、比较字符串', anchor: 'compare' },
       {
         type: 'warning',
@@ -455,6 +523,14 @@ System.out.println(a.equalsIgnoreCase("HELLO")); // true（忽略大小写）
 
 // 格式化
 String msg = String.format("你好，%s！今年 %d 岁。", "张三", 18);`,
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `a == b → false
+a.equals(b) → true
+msg → "你好，张三！今年 18 岁。"`,
       },
       {
         type: 'heading',
@@ -481,6 +557,15 @@ StringBuilder sb = new StringBuilder("Hello");
 sb.insert(5, " World");  // 在下标5处插入
 sb.delete(5, 11);        // 删除 [5,11) 区间
 sb.reverse();            // 反转`,
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `result → "Hello, Java!"
+insert(5, " World") 后 → "Hello World"
+delete(5,11) 后 → "Hello"
+reverse() 后 → "olleH"`,
       },
     ],
   },
@@ -901,6 +986,15 @@ public class Main {
         type: 'paragraph',
         text: '项目中的 Book 示例：basics/src/08-class-encapsulation/（Book.java、BookDemo.java）。运行：javac src/08-class-encapsulation/*.java -d out && java -cp out BookDemo。学习案例文档见 java/学习案例/类与封装-Book.md。',
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果（BookDemo）',
+        code: `b1: Book{title='Java 核心技术', author='Cay S. Horstmann', price=99.0}
+书名: Java 核心技术, 作者: Cay S. Horstmann, 价格: 99.0
+b2: Book{title='Effective Java', author='Joshua Bloch', price=89.5}
+修改后 b2 价格: 79.0`,
+      },
     ],
   },
 
@@ -988,6 +1082,19 @@ public class Main {
       {
         type: 'paragraph',
         text: '父类引用指向子类对象时，调用方法会执行子类重写后的实现。例如：Animal ref = new Dog("旺财", 3, "金毛"); ref.makeSound() 输出的是「汪汪」，而不是父类的「（动物叫声）」。',
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果（InheritanceDemo）',
+        code: `Animal: Animal{name='小动物', age=2}
+叫声: （动物叫声）
+---
+ref (实际是 Dog): Dog{name='旺财', age=3, breed='金毛'}
+叫声: 汪汪
+---
+Dog: Dog{name='小黑', age=1, breed='柯基'}
+小黑(柯基): 汪汪`,
       },
       {
         type: 'paragraph',
@@ -1084,6 +1191,17 @@ for (Shape s : shapes) {
 }`,
       },
       {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果（InterfaceDemo）',
+        code: `s1 (实际是 Circle): 圆形, 边数=0
+s2 (实际是 Rectangle): 矩形, 边数=4
+--- 遍历 Shape 数组 ---
+  1: 圆形, 边数=0
+  2: 矩形, 边数=4
+  3: 圆形, 边数=0`,
+      },
+      {
         type: 'tip',
         title: '和继承的区别',
         text: '继承是「is-a」：Dog 是一种 Animal。接口是「能做什么」的约定：Circle 能当作 Shape 用。一个类只能 extends 一个父类，但可以 implements 多个接口。',
@@ -1127,6 +1245,15 @@ names.remove("李四四");      // 删：按内容
 boolean has = names.contains("张三");
 int size = names.size();`,
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `初始: [张三, 李四]
+改 set(1) 后: [张三, 李四四]
+删 remove 后: [张三]
+contains("张三") → true`,
+      },
       { type: 'heading', level: 2, text: '二、用 List 存多条数据', anchor: 'list-many' },
       {
         type: 'paragraph',
@@ -1143,6 +1270,14 @@ for (BookItem b : books) {
     System.out.println(b.title + " " + b.price);
 }`,
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `1. Java 入门 59.0 元
+2. Spring 实战 89.0 元
+3. MySQL 必知必会 49.0 元`,
+      },
       { type: 'heading', level: 2, text: '三、HashMap 增删改查', anchor: 'hashmap' },
       {
         type: 'code',
@@ -1153,6 +1288,16 @@ scores.put("张三", 85);       // 增/改（同 key 会覆盖）
 int n = scores.get("张三");  // 查
 scores.remove("张三");       // 删
 boolean has = scores.containsKey("张三");`,
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `初始: {张三=85, 李四=92, 王五=78}
+李四分数: 92
+改 put 王五=88 后: {张三=85, 李四=92, 王五=88}
+删张三后: {李四=92, 王五=88}
+size = 2`,
       },
       {
         type: 'paragraph',
@@ -1195,6 +1340,13 @@ try {
     System.out.println("除零: " + e.getMessage());
 }`,
       },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `捕获: For input string: "abc"
+除零: / by zero`,
+      },
       { type: 'heading', level: 2, text: '二、throws 声明', anchor: 'throws' },
       {
         type: 'paragraph',
@@ -1215,6 +1367,12 @@ try {
 } catch (IllegalArgumentException e) {
     System.out.println(e.getMessage());
 }`,
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `setScore 异常: 分数必须在 0~100 之间，当前: 105`,
       },
       {
         type: 'paragraph',
