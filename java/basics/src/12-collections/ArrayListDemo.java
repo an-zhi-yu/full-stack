@@ -46,6 +46,10 @@ public class ArrayListDemo {
         System.out.println("包含张三? " + has);
 
         // ---------- 二、List 存多条「对象」数据（如多条订单/用户） ----------
+        // 【必须写 new BookItem(...) 吗？能像 JS 的 { title: "a", price: 1 } 吗？】
+        // Java 没有「对象字面量」：不能 books.add({ title: "x", price: 1 }); 这样写会编译错误。
+        // 自定义类型必须用 new 调用构造方法创建对象。若只要「键值对」不要类，可用 Map<String,Object>，但类型弱、不如 BookItem 清晰。
+        // Java 16+ 可用 record BookItem(String title, double price) {} 写法更短，仍要 new BookItem("入门", 59.0)。
         List<BookItem> books = new ArrayList<>();
         books.add(new BookItem("Java 入门", 59.0));
         books.add(new BookItem("Spring 实战", 89.0));

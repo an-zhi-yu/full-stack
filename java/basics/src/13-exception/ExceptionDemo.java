@@ -3,6 +3,18 @@
  * 异常：try-catch 捕获、throws 声明、throw 抛出
  * ============================================
  *
+ * 【异常类型有哪几种？（常见子类）】
+ * 所有异常/错误都继承自 Throwable：
+ *   - Error：严重系统问题（如 OutOfMemoryError），一般不 catch。
+ *   - Exception：程序可处理的异常。
+ *       · RuntimeException（运行时异常，非受检）：不必强制 throws，常见有
+ *         NumberFormatException（字符串转数字失败）、IllegalArgumentException（参数不合法）、
+ *         ArithmeticException（如除零）、NullPointerException（空指针）、
+ *         IndexOutOfBoundsException（下标越界）、IllegalStateException（状态不对）、
+ *         ClassCastException（强转类型不对）等。
+ *       · 其他 Exception（受检异常）：如 IOException，方法要么 try-catch 要么 throws。
+ * IllegalArgumentException、NumberFormatException 都属于 RuntimeException 的子类。
+ *
  * 【异常是什么？】
  * 程序运行时的错误（如除零、数组越界、数字格式错误）。不处理会直接崩溃；用 try-catch 可以「抓住」异常并处理，程序继续跑。
  *

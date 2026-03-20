@@ -27,7 +27,11 @@ javac src/12-collections/HashMapDemo.java -d out && java -cp out HashMapDemo
 
 ---
 
-## 3. List 存多条数据的典型写法
+## 3. 必须 `new BookItem(...)` 吗？能像 JS `{ a: 1, b: 2 }` 吗？
+
+不能。Java **没有对象字面量**，不能 `books.add({ title: "x", price: 1 })`。自定义类型必须用 **new** 调构造方法。若只要键值对、不写类，可用 **Map**（类型不如专用类清晰）。Java 16+ 可用 **record** 缩短类定义，仍要 `new BookItem(...)`。
+
+## 4. List 存多条数据的典型写法
 
 ```java
 List<BookItem> list = new ArrayList<>();

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Maven 项目描述文件（Project Object Model）
+  前端类比：有点像 package.json + 一部分构建脚本，但职责更重（依赖、编译、打包、插件都在这一个文件里声明）
+
+  本文件是「最小可运行」示例，方便你逐行对照学习案例文档阅读。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <!-- POM 模型版本，固定写 4.0.0 即可 -->
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--
+    GAV 三坐标（全球唯一标识一个 Maven 构件，类似 npm 的 @scope/name@version）
+    groupId    → 组织/公司域名反写，如 com.anzhiyu
+    artifactId → 项目名（jar 包名的一部分）
+    version    → 版本号；SNAPSHOT 表示开发中快照版
+  -->
+  <groupId>com.anzhiyu</groupId>
+  <artifactId>maven-intro</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <!-- 打包类型：jar = 普通 Java 库/应用；web 项目常用 war -->
+  <packaging>jar</packaging>
+
+  <name>maven-intro</name>
+  <description>后端小白入门：认识 Maven 与 pom.xml（安知鱼学习笔记配套示例）</description>
+
+  <!-- 属性：统一 JDK 版本，避免各处写死 -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+
+  <!--
+    依赖：类似 npm 的 dependencies。
+    每个 <dependency> 也用 GAV 三坐标指向「别人发布好的 jar」：
+      groupId    → 组织（如 com.google.code.gson）
+      artifactId → 构件名（如 gson）
+      version    → 版本号
+    Maven 根据这三个值去「中央仓库」（默认 https://repo1.maven.org）下载，
+    缓存到本机：~/.m2/repository/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar
+    第一次会联网下载，之后同版本直接用缓存（和 npm 装包逻辑很像）。
+  -->
+  <dependencies>
+    <!-- Google Gson：JSON 与 Java 对象互转（前端可类比 JSON.parse / stringify） -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.11.0</version>
+      <!-- 不写 scope 时默认 compile：编译、运行都要用 -->
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- 编译插件：使用上面 properties 里的 Java 17 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+
+      <!--
+        直接运行 main：mvn compile exec:java
+        等价于「编译后 java -cp ... com.anzhiyu.mavenintro.MavenIntroApp」
+
+        mainClass 填的是「类的全限定名」（包名 + 类名），不是磁盘上的 .java 路径。
+        例如：com.anzhiyu.mavenintro.MavenIntroApp
+        对应源文件：src/main/java/com/anzhiyu/mavenintro/MavenIntroApp.java
+        JVM 执行的是编译后的 MavenIntroApp.class，入口方法是该类里的 public static void main(String[] args)
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <mainClass>com.anzhiyu.mavenintro.MavenIntroApp</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

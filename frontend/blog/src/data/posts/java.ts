@@ -1,5 +1,5 @@
 /**
- * Java 基础系列文章（12 篇）
+ * Java 基础系列文章（17 篇）
  * 内容来源：java/basics/src/ 各示例文件
  * 新增文章直接在此文件末尾 javaPosts 数组里追加对象
  */
@@ -1278,6 +1278,16 @@ for (BookItem b : books) {
 2. Spring 实战 89.0 元
 3. MySQL 必知必会 49.0 元`,
       },
+      {
+        type: 'heading',
+        level: 3,
+        text: 'List 里加对象必须 new 吗？能像 JS 的 { a: 1, b: 2 } 吗？',
+        anchor: 'new-vs-js-object',
+      },
+      {
+        type: 'paragraph',
+        text: 'Java 没有「对象字面量」：不能写 books.add({ title: "x", price: 59 });，会编译错误。自定义类型必须用 new 调用构造方法，例如 new BookItem("Java 入门", 59.0)。若只要键值对、不想单独写类，可以用 Map<String, Object> 或 Map<String, Double>，但类型不如专用类清晰。Java 16+ 可用 record 简化类声明，仍然要 new BookItem(...)。',
+      },
       { type: 'heading', level: 2, text: '三、HashMap 增删改查', anchor: 'hashmap' },
       {
         type: 'code',
@@ -1317,11 +1327,34 @@ size = 2`,
     categorySlug: 'java',
     tags: ['Java', '异常', 'try-catch', 'throws', 'throw'],
     date: '2026-03-17',
-    readTime: 5,
+    readTime: 7,
     content: [
       {
         type: 'paragraph',
         text: '程序运行时的错误（如除零、数字格式错误）会以「异常」的形式抛出。不处理会直接崩溃；用 try-catch 可以捕获并处理，用 throws 可以声明「本方法可能抛异常」，用 throw 可以主动抛出一个异常。',
+      },
+      { type: 'heading', level: 2, text: '常见异常类型有哪几种？', anchor: 'exception-types' },
+      {
+        type: 'paragraph',
+        text: '所有异常与错误都继承自 Throwable：Error（如内存溢出，一般不捕获）与 Exception。Exception 里又分为：RuntimeException（运行时异常，非受检，不必强制 throws）和其他受检异常（如 IOException，必须处理或 throws）。',
+      },
+      {
+        type: 'table',
+        headers: ['异常类', '常见场景'],
+        rows: [
+          ['NumberFormatException', 'Integer.parseInt("abc") 等字符串转数字失败'],
+          ['IllegalArgumentException', '参数不合法，主动 throw 或库方法抛出'],
+          ['ArithmeticException', '整数除零等'],
+          ['NullPointerException', '对 null 调方法或取字段'],
+          ['IndexOutOfBoundsException', 'List/数组下标越界'],
+          ['IllegalStateException', '对象当前状态不允许该操作'],
+          ['ClassCastException', '强制类型转换失败'],
+        ],
+      },
+      {
+        type: 'tip',
+        title: 'IllegalArgumentException 与 NumberFormatException',
+        text: '二者都是 RuntimeException 的子类。NumberFormatException 专指数字解析失败；IllegalArgumentException 更通用，常用来表示「传进来的参数不符合业务规则」。',
       },
       { type: 'heading', level: 2, text: '一、try-catch 捕获', anchor: 'try-catch' },
       {
@@ -1377,6 +1410,529 @@ try {
       {
         type: 'paragraph',
         text: '项目中的代码：basics/src/13-exception/ExceptionDemo.java。学习案例见 java/学习案例/异常-try-catch-throws.md。',
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────
+  // 13. Maven 入门（前端视角）
+  // ─────────────────────────────────────────────────────────
+  {
+    id: 'java-maven-intro-pom',
+    title: 'Maven 入门：安装、建项目与 pom.xml（前端视角）',
+    subtitle: '为 AI 全栈铺路：认识 Java 项目构建工具，对标 npm 与 package.json',
+    category: 'Java 后端',
+    categorySlug: 'java',
+    tags: ['Java', 'Maven', 'pom.xml', '构建工具', '全栈'],
+    date: '2026-03-18',
+    readTime: 12,
+    content: [
+      {
+        type: 'paragraph',
+        text: '你是前端，要学 Java 后端：除了语法，迟早要面对 **Maven**（或 Gradle）。Maven 负责：约定目录、拉依赖、编译、打包、跑插件。本文用「对标 npm」的方式讲清：**安装 / IDEA 自带**、**用 Maven 建项目的本质**、**pom.xml 里每一块是什么**。仓库里已放好可运行示例 `full-stack/java/basics/maven-intro/`。文末 **第六节** 整理了 Maven 学习中的常见疑问（含 main、mainClass、依赖下载、后端运行模型等）。',
+      },
+      { type: 'heading', level: 2, text: '一、Maven 与前端工具怎么对应', anchor: 'npm-map' },
+      {
+        type: 'table',
+        headers: ['前端', 'Maven（Java）'],
+        rows: [
+          ['package.json', 'pom.xml（项目模型 + 依赖 + 插件）'],
+          ['npm install', '首次编译时自动解析依赖，或 mvn dependency:resolve'],
+          ['node_modules/', '~/.m2/repository/（本机依赖缓存）'],
+          ['npm run build', 'mvn compile / mvn package'],
+          ['src/', 'src/main/java（主代码）、src/test/java（测试）'],
+        ],
+      },
+      {
+        type: 'tip',
+        title: '为什么要学 Maven',
+        text: 'Spring Boot、公司后端项目几乎都基于 Maven/Gradle。会看 pom、会加依赖、会 package，是接真实项目的门槛。',
+      },
+      { type: 'heading', level: 2, text: '二、安装 Maven', anchor: 'install' },
+      {
+        type: 'list',
+        ordered: true,
+        items: [
+          '**IntelliJ IDEA 自带（推荐）**：Settings → Build Tools → Maven，使用 Bundled Maven；用 IDEA Open 本仓库的 maven-intro 文件夹即可。',
+          '**Mac Homebrew**：brew install maven，然后 mvn -v 验证。',
+          '**只用 Cursor**：可装 Maven CLI，或在 IDEA 里打开同一目录用图形化 Lifecycle。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '三、pom.xml 最核心几块', anchor: 'pom-core' },
+      {
+        type: 'paragraph',
+        text: 'pom = Project Object Model。你最先要认的是下面四块（示例项目里都有 XML 中文注释）：',
+      },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**GAV**：groupId、artifactId、version —— 唯一标识这个项目（类似 npm 包名 + 版本）。',
+          '**properties**：如 Java 17，避免版本写散在各处。',
+          '**dependencies**：第三方库（Spring、JUnit 等），以后最常改这里。',
+          '**build / plugins**：编译插件、打包插件、本示例里的 exec 插件用于 mvn exec:java 直接跑 main。',
+        ],
+      },
+      {
+        type: 'code',
+        lang: 'xml',
+        caption: 'GAV 与 Java 版本（节选）',
+        code: `<groupId>com.anzhiyu</groupId>
+<artifactId>maven-intro</artifactId>
+<version>1.0-SNAPSHOT</version>
+
+<properties>
+  <maven.compiler.source>17</maven.compiler.source>
+  <maven.compiler.target>17</maven.compiler.target>
+</properties>`,
+      },
+      { type: 'heading', level: 2, text: '四、本仓库示例怎么跑', anchor: 'run-demo' },
+      {
+        type: 'code',
+        lang: 'bash',
+        caption: '在 maven-intro 目录下',
+        code: `cd full-stack/java/basics/maven-intro
+mvn compile exec:java`,
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果',
+        code: `========== Maven 入门示例 ==========
+若你看到本行，说明：pom.xml 配置正确，且 mvn compile exec:java 已成功执行。
+...（下方还有 Gson 演示输出，见文章《Maven 依赖与 Gson》）`,
+      },
+      {
+        type: 'paragraph',
+        text: '源码路径：`basics/maven-intro/`（含 `MavenIntroApp.java`、Gson 示例与 `pom.xml`）。学习案例：`java/学习案例/Maven入门-安装与pom.md`；加依赖见 `Maven依赖坐标与Gson.md`。',
+      },
+      {
+        type: 'heading',
+        level: 2,
+        text: '五、常用命令备忘',
+        anchor: 'mvn-cmds',
+      },
+      {
+        type: 'code',
+        lang: 'bash',
+        caption: '',
+        code: `mvn compile          # 编译到 target/classes
+mvn package          # 打 jar
+mvn dependency:tree  # 看依赖树（加库以后很有用）`,
+      },
+      { type: 'heading', level: 2, text: '六、常见疑问（Maven 与后端入门）', anchor: 'maven-faq' },
+      {
+        type: 'heading',
+        level: 3,
+        text: '每个包只能有一个 main？mainClass 是指定「哪个包」吗？',
+        anchor: 'faq-main-per-package',
+      },
+      {
+        type: 'paragraph',
+        text: '**不是。** Java **没有**「每个包只能有一个 main」这种语法规定。同一个包（package）里完全可以有**多个类**，每个类里都可以写 `public static void main(String[] args)` —— 和「一个文件一个 public 顶层类」的规则是两回事。',
+      },
+      {
+        type: 'paragraph',
+        text: '`exec-maven-plugin` 的 **`mainClass`** 填的是 **某一个类的全限定名**（包名 + 类名，如 `com.anzhiyu.mavenintro.MavenIntroApp`），表示执行 **`mvn exec:java` 时默认从哪个类启动**。它**不是**「指定一个包」，而是**指定一个入口类**。想跑另一个带 main 的类时：改 `mainClass`，或不用插件、直接用 `java -cp ... 另一个全限定名`。',
+      },
+      {
+        type: 'heading',
+        level: 3,
+        text: '前端有 create-vite 这种 CLI，后端有吗？',
+        anchor: 'faq-cli',
+      },
+      {
+        type: 'paragraph',
+        text: '有。常见如 **Spring Initializr**（网页或 IDEA 新建 Spring Boot）、**`mvn archetype:generate`**（Maven 脚手架）。小练习也可以不用 CLI，像本仓库 `maven-intro` 一样维护 `pom.xml` + `src/main/java` 即可。',
+      },
+      {
+        type: 'heading',
+        level: 3,
+        text: '为什么没看到像 npm i gson 一样装依赖？',
+        anchor: 'faq-npm-vs-mvn',
+      },
+      {
+        type: 'paragraph',
+        text: '习惯不同：**Maven** 一般在 `pom.xml` 的 `<dependencies>` 里写好坐标，再执行 **`mvn compile`**（或 `package`、`dependency:resolve`）。Maven 解析时发现本地缺 jar 就会**自动从中央仓库下载**到 `~/.m2/repository/`，所以往往**没有单独一条必做的「安装某库」命令**——**编译/打包本身就是触发下载的时机**。需要时也可用 `mvn dependency:get` 等。',
+      },
+      {
+        type: 'heading',
+        level: 3,
+        text: 'mainClass 配的是 .java 文件路径吗？',
+        anchor: 'faq-mainclass-path',
+      },
+      {
+        type: 'paragraph',
+        text: '**不是。** 配的是 **全限定类名**，不是磁盘路径。JVM 执行的是 **`.class`**，入口是该类里的 **`public static void main`**。对应关系示例：`com.anzhiyu.mavenintro.MavenIntroApp` ↔ 源文件 `.../mavenintro/MavenIntroApp.java`。',
+      },
+      {
+        type: 'heading',
+        level: 3,
+        text: '后端运行流程和前端差在哪？接口 CRUD 是不是都很「被动」？',
+        anchor: 'faq-backend-flow',
+      },
+      {
+        type: 'paragraph',
+        text: '**命令行小工具**（如当前 `MavenIntroApp`）：`main` **跑完就退出**，是主动执行一轮。**Web 后端**（如 Spring Boot）：也有一个 `main`，但主要负责**启动容器、监听端口**；之后业务多是 **HTTP 请求进来再进 Controller**——业务代码常表现为「请求驱动」，但**进程本身是长时间运行的**。此外还有定时任务、消息消费者等。接口 CRUD 是后端很常见的形态，但不是唯一形态。',
+      },
+      {
+        type: 'paragraph',
+        text: '学习案例原文档：`java/学习案例/后端小白答疑-CLI依赖与运行模型.md`（与第六节内容一致，可对照仓库阅读）。',
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────
+  // 14. Maven 依赖与 Gson（坐标、本地仓库）
+  // ─────────────────────────────────────────────────────────
+  {
+    id: 'java-maven-dependency-gson',
+    title: 'Maven 依赖与 Gson：坐标、下载与在代码里使用',
+    subtitle: '在 pom.xml 声明依赖，理解 GAV 与 ~/.m2，用 Gson 做 JSON 与对象互转',
+    category: 'Java 后端',
+    categorySlug: 'java',
+    tags: ['Java', 'Maven', 'Gson', '依赖', 'JSON', '全栈'],
+    date: '2026-03-19',
+    readTime: 7,
+    content: [
+      {
+        type: 'paragraph',
+        text: '上一篇讲了 Maven 与 pom.xml；本篇做一件后端日常最高频的事：**在 pom.xml 里加第三方依赖**，并理解 **坐标（GAV）**、**jar 下载到哪里**、**为什么 import 能编译通过**。示例库选 **Gson**（Google 的 JSON 库），和前端 `JSON.parse` / `JSON.stringify` 很好类比。代码在 `full-stack/java/basics/maven-intro/`。',
+      },
+      { type: 'heading', level: 2, text: '一、依赖的「坐标」是什么？', anchor: 'gav' },
+      {
+        type: 'paragraph',
+        text: '和「你自己项目的 GAV」一样，**每一个**别人发布的 jar 也用三个字段唯一标识，合称 **GAV**：',
+      },
+      {
+        type: 'table',
+        headers: ['字段', '含义', 'Gson 示例'],
+        rows: [
+          ['groupId', '组织/厂商，常域名反写', 'com.google.code.gson'],
+          ['artifactId', '构件名', 'gson'],
+          ['version', '版本号', '2.11.0'],
+        ],
+      },
+      {
+        type: 'paragraph',
+        text: '在 pom.xml 里写一段 <dependency>，Maven 就能根据 GAV 去 **Maven Central** 解析下载地址（类似 npm 根据包名去 registry）。',
+      },
+      {
+        type: 'code',
+        lang: 'xml',
+        caption: 'pom.xml 中声明 Gson（节选）',
+        code: `<dependency>
+  <groupId>com.google.code.gson</groupId>
+  <artifactId>gson</artifactId>
+  <version>2.11.0</version>
+</dependency>`,
+      },
+      { type: 'heading', level: 2, text: '二、依赖下载到哪？', anchor: 'm2-repo' },
+      {
+        type: 'paragraph',
+        text: '默认缓存目录：**用户目录下的 `~/.m2/repository/`**。Gson 会落在类似 `.../com/google/code/gson/gson/2.11.0/gson-2.11.0.jar` 的路径。第一次 `mvn compile` 需要联网下载；之后同版本直接用本地缓存，和 npm 装过的包不再重复拉取类似。',
+      },
+      {
+        type: 'tip',
+        title: '怎么确认依赖真的进来了？',
+        text: '在项目根执行 `mvn dependency:tree`，会看到 `com.google.code.gson:gson:jar:2.11.0:compile` 一行。',
+      },
+      { type: 'heading', level: 2, text: '三、在代码里用 Gson', anchor: 'gson-code' },
+      {
+        type: 'paragraph',
+        text: '示例里增加了 `CourseCard`（简单 POJO）和 `GsonIntroDemo`：`fromJson` 把 JSON 字符串变成 Java 对象，`toJson` 把对象变回 JSON。`MavenIntroApp` 的 `main` 末尾会调用 `GsonIntroDemo.run()`。',
+      },
+      {
+        type: 'code',
+        lang: 'java',
+        caption: '反序列化 / 序列化（与前端 JSON API 对照）',
+        code: `Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+// JSON → 对象（类似 JSON.parse，但是强类型 CourseCard）
+CourseCard parsed = gson.fromJson(jsonString, CourseCard.class);
+
+// 对象 → JSON（类似 JSON.stringify）
+String out = gson.toJson(new CourseCard("Spring Boot 基础", 8));`,
+      },
+      { type: 'heading', level: 2, text: '四、怎么运行', anchor: 'run' },
+      {
+        type: 'code',
+        lang: 'bash',
+        caption: '',
+        code: `cd full-stack/java/basics/maven-intro
+mvn -q compile exec:java`,
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '运行结果（节选，在终端输出）',
+        code: `========== Maven 入门示例 ==========
+...
+========== Gson 依赖演示（Maven 已下载坐标对应的 jar）==========
+① 反序列化 fromJson → CourseCard{title='Java 与 Maven 入门', lessonCount=12}
+② 序列化 toJson →
+{
+  "title": "Spring Boot 基础",
+  "lessonCount": 8
+}
+==============================================================`,
+      },
+      {
+        type: 'paragraph',
+        text: '学习案例：`java/学习案例/Maven依赖坐标与Gson.md`。源码：`MavenIntroApp.java`、`GsonIntroDemo.java`、`CourseCard.java`、`pom.xml`（含 XML 注释）。',
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────
+  // 15. Java 编码与工程规范（前端对照）
+  // ─────────────────────────────────────────────────────────
+  {
+    id: 'java-style-conventions',
+    title: 'Java 编码与工程规范速览（命名、包、资源）',
+    subtitle: '从前端视角整理：类/方法/变量怎么起名、包与目录、配置文件与资源命名',
+    category: 'Java 后端',
+    categorySlug: 'java',
+    tags: ['Java', '规范', '命名', '工程化', '全栈'],
+    date: '2026-03-20',
+    readTime: 10,
+    content: [
+      {
+        type: 'paragraph',
+        text: '学完语法后，下一步是**写得像工业界 Java**。本文从前端熟悉的「变量/方法/文件夹命名」出发，对照整理 **Java 官方与社区主流约定**（与 Google Java Style Guide、多数公司规范一致），方便你读开源代码、进团队不违和。',
+      },
+      { type: 'heading', level: 2, text: '一、权威与工具', anchor: 'authority' },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**Oracle / Java Language Specification**：语法层规则。',
+          '**Google Java Style Guide**：业界最常用的书写风格参考（缩进、换行、命名）。',
+          '**Checkstyle / Spotless / SpotBugs**：类似 ESLint + Prettier + 部分静态检查，可在 CI 里强制规范。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '二、标识符命名（你最关心的）', anchor: 'naming' },
+      {
+        type: 'table',
+        headers: ['类型', '风格', '示例', '前端类比'],
+        rows: [
+          ['类、接口、枚举', 'UpperCamelCase（大驼峰）', 'UserService, HttpClient', 'React 组件名、TS 类名'],
+          ['方法、变量、参数', 'lowerCamelCase（小驼峰）', 'findUser(), maxRetry', '函数名、let/const'],
+          ['常量', 'UPPER_SNAKE_CASE', 'MAX_SIZE, DEFAULT_TIMEOUT', '全大写下划线'],
+          ['包 package', '全小写，点分隔', 'com.anzhiyu.blog.api', 'npm scope 小写习惯'],
+        ],
+      },
+      {
+        type: 'tip',
+        title: '类名文件',
+        text: '一个源文件里**最多一个 public 顶层类**，且**文件名必须与该类名完全一致**（含大小写），扩展名 .java。非 public 的顶层类可以多个，但团队一般避免。',
+      },
+      { type: 'heading', level: 2, text: '三、包（package）与目录', anchor: 'package-dir' },
+      {
+        type: 'paragraph',
+        text: '**包名 = 磁盘目录结构**：`package com.anzhiyu.demo` 对应 `com/anzhiyu/demo/`。包名一般用**公司域名反写**避免全球冲突，**全小写**，不用连字符（连字符在包名里不合法）。',
+      },
+      { type: 'heading', level: 2, text: '四、Maven / 资源文件命名', anchor: 'resources' },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**src/main/resources**：配置文件常用 `application.yml` / `application.properties`（Spring），或 `logback.xml`；名字**小写+连字符**或**点分**都可，团队统一即可。',
+          '**国际化**：`messages_zh_CN.properties`、`messages_en.properties` 等约定。',
+          '**静态模板**：按模块分子目录，如 `templates/`、`static/`，与 Spring Boot 约定一致。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '五、可读性与注释', anchor: 'comments' },
+      {
+        type: 'paragraph',
+        text: '公共 API、复杂算法写 **Javadoc**（/** ... */）；业务方法用**中文或英文**单行注释均可，**团队统一语言**。避免无意义注释；魔法数字尽量提成**命名常量**。',
+      },
+      { type: 'heading', level: 2, text: '六、小结', anchor: 'summary-style' },
+      {
+        type: 'paragraph',
+        text: '记住：**类大驼峰、方法变量小驼峰、常量全大写下划线、包全小写对齐目录**。大项目还会用 Checkstyle 等在 PR 里自动卡风格——和前端 lint-staged 同一思路。',
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────
+  // 16. Java 三种常见目录结构（可扩展）
+  // ─────────────────────────────────────────────────────────
+  {
+    id: 'java-project-structure-three',
+    title: 'Java 常见项目目录结构：三种主流形态与扩展性',
+    subtitle: 'Maven 标准目录、Spring Boot 分层、多模块父工程——从大厂常见实践理解怎么选',
+    category: 'Java 后端',
+    categorySlug: 'java',
+    tags: ['Java', '目录结构', 'Maven', 'Spring Boot', '架构'],
+    date: '2026-03-21',
+    readTime: 11,
+    content: [
+      {
+        type: 'paragraph',
+        text: '前端有「按页面 / 按功能 / monorepo」等组织方式；Java 后端也有**约定大于配置**的目录习惯。下面三种由简到繁，**覆盖个人学习 → 单应用服务 → 大项目拆分**，都是国内团队极常见的选型。',
+      },
+      { type: 'heading', level: 2, text: '形态一：Maven 标准目录（单模块库或小程序）', anchor: 'maven-standard' },
+      {
+        type: 'paragraph',
+        text: '**特点**：官方约定，工具链默认就认；适合**学习、工具库、小型服务**。',
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '典型结构',
+        code: `项目根/
+├── pom.xml
+├── src/main/java/          # 生产代码（包名对应子目录）
+├── src/main/resources/     # 配置文件、非代码资源
+├── src/test/java/          # 单元测试
+└── src/test/resources/     # 测试用资源`,
+      },
+      {
+        type: 'tip',
+        title: '扩展性',
+        text: '业务变大后可**原址加分包**（如 api / service / domain），或升级到形态二、三。',
+      },
+      { type: 'heading', level: 2, text: '形态二：Spring Boot 单应用 + 分层包（最流行 Web 后端）', anchor: 'spring-layers' },
+      {
+        type: 'paragraph',
+        text: '**特点**：在 `src/main/java` 下按**职责分包**，与「控制器 / 业务 / 数据访问」对应，和前端「pages / services / api」分层思想一致。',
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '常见包划分（名称可微调）',
+        code: `com.company.app
+├── Application.java          # 启动类（main）
+├── controller    (或 web)   # HTTP 入参出参、路由
+├── service                    # 业务逻辑
+├── repository  (或 mapper)  # 数据库访问
+├── domain / model / dto      # 实体、传输对象
+└── config / common / util    # 配置、工具`,
+      },
+      {
+        type: 'paragraph',
+        text: '**扩展性**：单体内先**纵向分包**；团队变大后可把某一层先拆成**独立模块**（过渡到形态三）。',
+      },
+      { type: 'heading', level: 2, text: '形态三：Maven 多模块（企业级、易扩展）', anchor: 'multi-module' },
+      {
+        type: 'paragraph',
+        text: '**特点**：仓库根有一个 **父 pom**（packaging=pom），只管理**版本与公共依赖**；下面多个子模块各自有独立 `pom.xml`。**大厂与开源中大型项目**极常见。',
+      },
+      {
+        type: 'code',
+        lang: 'text',
+        caption: '示例模块划分',
+        code: `parent/
+├── pom.xml                 # 父 POM：dependencyManagement、插件版本
+├── app-api/                # 对外 API 契约、DTO
+├── app-service/            # 业务实现、可部署的 Spring Boot
+├── app-common/             # 工具、常量、公共异常
+└── app-integration/        # 可选：第三方对接、消息等`,
+      },
+      {
+        type: 'warning',
+        title: '不要盲目上多模块',
+        text: '个人学习、小服务用**形态一或二**即可；多模块带来**构建顺序、IDE 导入、发布流程**成本，等业务边界清晰再拆。',
+      },
+      { type: 'heading', level: 2, text: '三种怎么选（简表）', anchor: 'compare' },
+      {
+        type: 'table',
+        headers: ['形态', '适用', '扩展方式'],
+        rows: [
+          ['Maven 标准单模块', '学习、类库、小工具', '加分包或再建模块'],
+          ['Spring Boot 分层', '单体 Web/API、团队 1～N 人', '分包 → 再拆模块'],
+          ['多模块父工程', '多团队、清晰边界、复用 common', '按域继续加子模块'],
+        ],
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────
+  // 17. Java 基础新手注意点（坑点清单）
+  // ─────────────────────────────────────────────────────────
+  {
+    id: 'java-beginner-pitfalls',
+    title: 'Java 基础新手易踩坑清单（对照前端思维）',
+    subtitle: '字符串比较、整数除法、空指针、包与目录、泛型与 equals——能整理多少是多少',
+    category: 'Java 后端',
+    categorySlug: 'java',
+    tags: ['Java', '新手', '踩坑', '基础', '全栈'],
+    date: '2026-03-22',
+    readTime: 12,
+    content: [
+      {
+        type: 'paragraph',
+        text: '以下不重复语法课，只列**容易带着 JS 习惯误用**或**一跑就懵**的点。建议收藏，写代码时对照。',
+      },
+      { type: 'heading', level: 2, text: '一、类型与运算', anchor: 'types-ops' },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**整数相除**：`3 / 2` 结果是 **1**（int），要小数请 `3.0 / 2` 或强转。',
+          '**比较字符串内容**：用 **equals**，不要 ==（== 比的是引用，类似 JS 里比对象引用）。',
+          '**boolean**：条件必须是 boolean，不能写 `if (1)`。',
+          '**char 与 String**：单引号是 char，双引号是 String，类型不同。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '二、空指针与集合', anchor: 'null-collections' },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**NullPointerException**：对 **null** 调方法、拆箱、取字段会炸；习惯上**尽早校验**或使用 Optional（进阶）。',
+          '**Arrays.asList** 得到的 List **不能 add/remove**（定长）；要可变用 **new ArrayList<>()**。',
+          '**增强 for 里删除元素**：可能 ConcurrentModificationException，用迭代器 remove 或新集合。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '三、面向对象与 equals', anchor: 'oop-equals' },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**重写 equals 时常要重写 hashCode**（尤其要放进 HashMap/HashSet 时）。',
+          '**方法隐藏与重写**：子类 static 方法不会多态「重写」父类实例方法；实例方法用 @Override 防写错签名。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '四、泛型与原始类型', anchor: 'generics' },
+      {
+        type: 'paragraph',
+        text: '避免长期用 **原始类型** `List list`（无泛型），会丢失类型检查。`List<String>` 与 `List<Integer>` 在运行时擦除，某些场景要注意 **类型安全**。',
+      },
+      { type: 'heading', level: 2, text: '五、异常与资源', anchor: 'exception-resources' },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**受检异常**：调用声明 throws IOException 的方法，要么 try-catch 要么继续 throws。',
+          '**try-with-resources**：实现了 AutoCloseable 的资源（如 InputStream）优先用 try () {} 自动关闭。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '六、工程与 Maven', anchor: 'engineering' },
+      {
+        type: 'list',
+        ordered: false,
+        items: [
+          '**package 与文件夹**：必须一致；**目录名不要用数字开头**当包名，IDE 易报包路径错误。',
+          '**mainClass**：是全限定**类名**，不是 .java 文件路径。',
+          '**依赖**：写在 pom 里后靠 **mvn compile** 等触发下载，不一定有单独「npm i」式命令。',
+        ],
+      },
+      { type: 'heading', level: 2, text: '七、时间与 API 选择', anchor: 'datetime-api' },
+      {
+        type: 'paragraph',
+        text: '新业务优先 **java.time**（LocalDateTime、ZonedDateTime），老代码里的 **java.util.Date / Calendar** 了解即可，少在新项目里当首选。',
+      },
+      { type: 'heading', level: 2, text: '八、并发（先有个印象）', anchor: 'concurrency-hint' },
+      {
+        type: 'paragraph',
+        text: '**SimpleDateFormat**、部分集合**非线程安全**，多线程共享要小心。进阶再系统学 synchronized、线程池、并发集合。',
+      },
+      {
+        type: 'tip',
+        title: '学习路径',
+        text: '坑清单配合你博客里的「字符串、数组、集合、异常、Maven」系列文章 + 仓库 basics 示例代码，逐项打勾验证效果最好。',
       },
     ],
   },

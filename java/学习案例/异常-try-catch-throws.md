@@ -4,7 +4,15 @@
 
 ---
 
-## 1. 概念速览
+## 1. 常见异常类型（Throwable 体系简述）
+
+- **Throwable** → **Error**（严重错误，一般不 catch） / **Exception**
+- **Exception** → **RuntimeException**（运行时异常，非受检）与其他 **受检异常**（如 IOException）
+- **RuntimeException 常见子类**：`NumberFormatException`、`IllegalArgumentException`、`ArithmeticException`、`NullPointerException`、`IndexOutOfBoundsException`、`IllegalStateException`、`ClassCastException` 等
+
+`IllegalArgumentException`、`NumberFormatException` 都属于 RuntimeException。
+
+## 2. 概念速览
 
 | 概念 | 说明 |
 |------|------|
@@ -14,7 +22,7 @@
 
 ---
 
-## 2. 代码位置与运行
+## 3. 代码位置与运行
 
 - **演示**：`basics/src/13-exception/ExceptionDemo.java`（NumberFormatException、ArithmeticException 的捕获；带 throws 的 setScore、throw 校验参数）
 
@@ -26,7 +34,7 @@ javac src/13-exception/ExceptionDemo.java -d out && java -cp out ExceptionDemo
 
 ---
 
-## 3. 要点小结
+## 4. 要点小结
 
 - 可能抛异常的代码放在 try 里，用 catch 按异常类型分别处理。
 - 方法不想在内部 catch 时，用 throws 声明，让调用者 try-catch 或继续 throws。

@@ -1,11 +1,7 @@
+package practicecalc;
+
 /**
- * ============================================
- * 简单计算器：实现 BasicCalculator 接口
- * ============================================
- *
- * 你最初的想法「一个类，有加减乘除四个方法」完全正确；
- * 这里只是把这四个方法提到「接口」里做约定，本类用 implements 实现它们。
- * 多变量、0-9 等：先做成「两数 + 一个运算」就够用，多步运算就多次调用。
+ * 实现 BasicCalculator：四则运算；除法里除零抛 IllegalArgumentException。
  */
 public class SimpleCalculator implements BasicCalculator {
 

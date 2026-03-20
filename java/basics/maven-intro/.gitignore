@@ -1,0 +1,2 @@
+# Maven 构建产物（类似 node_modules + dist，一般不入库）
+target/
