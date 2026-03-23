@@ -1,7 +1,7 @@
 /**
  * 文章数据聚合入口
  * 每新增一个分类，只需：
- *   1. 新建 xxx.ts（如 frontend.ts）
+ *   1. 新建 xxx.ts，或像 Java 一样建子目录 xxx/index.ts 再拆多文件
  *   2. 在此文件 import 并 spread 进 allPosts
  */
 import type { Post } from '../types'

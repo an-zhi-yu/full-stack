@@ -4,7 +4,7 @@
  */
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Tag, Tooltip } from 'antd'
-import { EyeOutlined, ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons'
+import { EyeOutlined, HistoryOutlined } from '@ant-design/icons'
 import { getPostById, getPostsByCategory } from '@/data/posts/index'
 import allPosts from '@/data/posts/index'
 import { ContentRenderer } from '@/components/post/ContentRenderer'

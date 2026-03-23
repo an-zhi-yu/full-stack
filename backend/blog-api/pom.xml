@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  pom.xml 是 Maven 项目的配置文件，类似于前端项目的 package.json
+  它定义了项目的依赖、构建配置等信息
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 
+      parent 标签指定了父项目
+      类似于前端项目中继承某个基础配置
+      spring-boot-starter-parent 是 Spring Boot 官方提供的父项目
+      它会自动管理依赖版本，你不需要指定每个依赖的版本号
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <!-- 项目的基本信息 -->
+    <groupId>com.anzhiyu</groupId>  <!-- 组织ID，类似于 npm 包的 @scope -->
+    <artifactId>blog-api</artifactId>  <!-- 项目ID，类似于 npm 包的包名 -->
+    <version>1.0.0</version>  <!-- 版本号 -->
+
+    <!-- 项目属性配置 -->
+    <properties>
+        <java.version>17</java.version>  <!-- 指定 Java 版本为 17 -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>  <!-- 源代码编译版本 -->
+        <maven.compiler.target>${java.version}</maven.compiler.target>  <!-- 目标编译版本 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  <!-- 源代码编码 -->
+    </properties>
+
+    <!-- 
+      dependencies 标签定义项目依赖
+      类似于前端 package.json 中的 dependencies 和 devDependencies
+      
+      【问题1解答】这些依赖包是怎么知道的？
+      
+      1. 创建 Spring Boot 项目时，脚手架会推荐常用依赖
+         类似于 vue-cli 创建项目时让你选择需要哪些功能（Router、Vuex、TypeScript等）
+      
+      2. 这些是最基础的 Web 开发依赖：
+         - spring-boot-starter-web：提供 Web 功能（Tomcat、Spring MVC）
+           类似于前端的 express 或 koa 框架
+         
+         - spring-boot-starter-test：提供测试功能（JUnit）
+           类似于前端的 jest 或 vitest
+         
+         - spring-boot-devtools：开发工具（热更新）
+           类似于前端的 webpack-dev-server 或 vite 的热更新
+      
+      3. 实际开发中，你可以根据需求添加更多依赖：
+         - 数据库：spring-boot-starter-data-jpa、mysql-connector-java
+         - 安全：spring-boot-starter-security
+         - 缓存：spring-boot-starter-data-redis
+         
+      4. 查找依赖的方式：
+         - Spring Boot 官方文档
+         - Maven 中央仓库：https://mvnrepository.com/
+         - 类似 npm 的 search，你可以搜索需要的功能
+    -->
+    <dependencies>
+        <!-- 
+          Spring Boot Web 依赖
+          作用：提供 Web 开发所需的所有基础功能
+          包含：Spring MVC（处理 HTTP 请求）、Tomcat（Web 服务器）、Jackson（JSON 处理）
+          
+          前端类比：
+          类似于同时安装了 express + http-server + body-parser
+          有了它，你的 Java 应用就能像 Node.js 服务一样接收 HTTP 请求
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 
+          Spring Boot Test 依赖
+          作用：提供单元测试和集成测试功能
+          包含：JUnit 5、Mockito、Spring Test
+          
+          前端类比：
+          类似于 jest + @vue/test-utils
+          scope="test" 表示只在测试时使用，不会打包到生产环境
+          类似于 npm 的 devDependencies
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 
+          Spring Boot DevTools 开发工具
+          作用：开发时自动重启应用，提高开发效率
+          
+          前端类比：
+          类似于 webpack-dev-server 或 vite 的热更新（HMR）
+          当你修改代码保存后，应用会自动重启，不需要手动停止再启动
+          
+          scope="runtime" 表示只在运行时可用
+          optional="true" 表示可选依赖，不会传递依赖
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <!-- 构建配置 -->
+    <build>
+        <plugins>
+            <!-- 
+              Spring Boot Maven 插件
+              作用：打包可执行的 JAR 文件
+              
+              前端类比：
+              类似于 webpack 或 vite 的构建工具
+              它会将所有依赖打包到一个 JAR 文件中
+              类似于前端打包成 dist 目录，但这里是单个文件
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
