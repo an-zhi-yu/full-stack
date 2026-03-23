@@ -1,0 +1,14 @@
+# 开发环境：spring.profiles.active=dev 时合并进主配置
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+    com.anzhiyu.blogapi: debug
+
+# 覆盖/补充 app.demo（只写要变的项即可）
+app:
+  demo:
+    welcome-extra: "【dev】profile=dev，端口在下方 server.port"

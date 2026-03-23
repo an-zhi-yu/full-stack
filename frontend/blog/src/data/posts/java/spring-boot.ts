@@ -5,7 +5,7 @@ export const javaSpringBootPosts: Post[] = [
   {
     id: 'java-spring-boot-blog-api',
     title: 'Spring Boot 入门：blog-api 项目导读（前端对照）',
-    subtitle: 'pom、启动类、@RestController、application.properties；案例在 full-stack/backend/blog-api',
+    subtitle: 'pom、启动类、@RestController、application.yml；案例在 full-stack/backend/blog-api',
     category: 'Java 后端',
     categorySlug: 'java',
     tags: ['Java', 'Spring Boot', 'REST', 'Maven', '全栈'],
@@ -25,7 +25,7 @@ export const javaSpringBootPosts: Post[] = [
           ['`package.json` + npm', '`pom.xml` + `mvn`（依赖、脚本式生命周期）'],
           ['`npm run dev` / Vite', '`./start.sh` 或 `mvn spring-boot:run` / `java -jar`'],
           ['Express `app.get(...)`', '`@RestController` + `@RequestMapping("/api")` + `@GetMapping`'],
-          ['`.env` / 环境变量', '`src/main/resources/application.properties`（或 `application.yml`）'],
+          ['`.env` / 环境变量', '`src/main/resources/application.yml` + `application-{profile}.yml`'],
           ['把服务起在 3000/5173', '`server.port=8080`'],
         ],
       },
@@ -39,7 +39,7 @@ export const javaSpringBootPosts: Post[] = [
           '**`HelloController.java`**：调用 `HelloService`，返回 **`ApiResult` 泛型**（Jackson 序列化为 `{ code, message, data }`）。路径为 **`GET /api/hello`**、**`GET /api/health`**。',
           '**`HelloService.java`**：薄业务层，便于以后加数据库等逻辑而不堆在 Controller。',
           '**`WebMvcConfig.java`**：配置 **CORS**，`/api/**` 对 `localhost` / `127.0.0.1` 各端口放行，方便 Vite 直连。',
-          '**`application*.properties`**：公共项在 `application.properties`，**`spring.profiles.active`** 默认 `dev`；`application-dev` / `application-prod` 分环境端口与日志，类似 `.env.development` / `.env.production`。',
+          '**`application*.yml`**：公共项在 `application.yml`，**`spring.profiles.active`** 默认 `dev`；`application-dev.yml` / `application-prod.yml` 分环境端口与日志；自定义键如 **`app.demo`** 由 `AppDemoProperties` 绑定，见 **`GET /api/learn/config-yml-demo`**。',
           '**`HelloControllerTest.java`**：`@SpringBootTest` + **MockMvc** 校验 JSON 字段，CI 可跑 `mvn test`。',
         ],
       },
@@ -58,9 +58,9 @@ export const javaSpringBootPosts: Post[] = [
     ├── controller/HelloController.java
     └── service/HelloService.java
 └── src/main/resources/
-    ├── application.properties
-    ├── application-dev.properties
-    └── application-prod.properties
+    ├── application.yml
+    ├── application-dev.yml
+    └── application-prod.yml
 └── src/test/java/.../HelloControllerTest.java`,
       },
       { type: 'heading', level: 2, text: '三、怎么启动与自测', anchor: 'run' },

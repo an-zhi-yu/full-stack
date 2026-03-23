@@ -42,6 +42,7 @@ import org.springframework.boot.SpringApplication;
   或者 Vue 中的 createApp() 的调用位置
 */
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /*
   【问题2解答】@SpringBootApplication 是干嘛的？
@@ -76,6 +77,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
   "从这里开始启动应用，并自动配置和扫描组件"
 */
 @SpringBootApplication
+@ConfigurationPropertiesScan // 扫描带 @ConfigurationProperties 的类（如 AppDemoProperties），注册为 Bean
 public class BlogApiApplication {
 
     /*

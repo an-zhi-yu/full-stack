@@ -4,6 +4,8 @@
 
 这是一个基于 Spring Boot 3 和 Java 17 的博客 API 项目，用于演示如何快速搭建一个 Spring Boot 应用，并包含常见**工程化实践**（统一响应、CORS、分层、多环境、接口测试）。
 
+**前端转后端推荐阅读**：[`docs/前端学后端-REST与YAML配置.md`](docs/前端学后端-REST与YAML配置.md)（GET/POST、fetch、跨域、YAML、`application.yml`）。
+
 ## 技术栈
 
 - Spring Boot 3.2.0
@@ -15,23 +17,24 @@
 
 ```
 backend/blog-api/
-├── src/
-│   ├── main/
-│   │   ├── java/com/anzhiyu/blogapi/
-│   │   │   ├── BlogApiApplication.java    # 启动类
-│   │   │   ├── common/ApiResult.java        # 统一 API 响应体 { code, message, data }
-│   │   │   ├── config/WebMvcConfig.java     # 跨域等 Web 配置
-│   │   │   ├── controller/HelloController.java
-│   │   │   └── service/HelloService.java    # 业务层（示例较薄）
-│   │   └── resources/
-│   │       ├── application.properties       # 公共配置 + 激活的 profile
-│   │       ├── application-dev.properties   # 开发环境
-│   │       └── application-prod.properties # 生产环境（示例）
-│   └── test/java/.../HelloControllerTest.java  # MockMvc 接口测试
-├── target/
-├── pom.xml
-├── start.sh
-└── README.md
+├── docs/
+│   └── 前端学后端-REST与YAML配置.md   # GET/POST、fetch、CORS、YAML 说明
+├── src/main/java/com/anzhiyu/blogapi/
+│   ├── BlogApiApplication.java         # @ConfigurationPropertiesScan
+│   ├── common/ApiResult.java
+│   ├── config/
+│   │   ├── AppDemoProperties.java      # 绑定 app.demo.*（YAML）
+│   │   └── WebMvcConfig.java           # CORS
+│   ├── controller/
+│   │   ├── HelloController.java
+│   │   └── FrontendLearningController.java  # 注释型：ping / echo / 读配置
+│   ├── dto/
+│   └── service/HelloService.java
+├── src/main/resources/
+│   ├── application.yml                 # 公共 + spring.profiles.active
+│   ├── application-dev.yml             # 端口、日志、可覆盖 app.demo
+│   └── application-prod.yml
+└── src/test/java/.../*Test.java
 ```
 
 ## 已包含的工程化要点
@@ -40,51 +43,28 @@ backend/blog-api/
 |------|------|
 | **统一 JSON** | 接口返回 `ApiResult`：`{ "code": 0, "message": "ok", "data": ... }` |
 | **CORS** | `WebMvcConfig` 对 `/api/**` 放行 `localhost` / `127.0.0.1` 任意端口（方便 Vite 联调） |
-| **分层** | `HelloController` → `HelloService`，后续可继续加 `repository` 等 |
-| **多环境** | `spring.profiles.active` 默认 `dev`；生产可 `java -jar app.jar --spring.profiles.active=prod` |
-| **测试** | `HelloControllerTest` 使用 `@SpringBootTest` + `MockMvc` |
+| **分层** | `HelloController` → `HelloService` |
+| **多环境** | `application.yml` + `application-{profile}.yml`；默认 `dev` |
+| **自定义配置** | `app.demo.*` + `AppDemoProperties`；`GET /api/learn/config-yml-demo` 可验 |
+| **测试** | `mvn test`（MockMvc） |
 
 ## 配置说明
 
-### 1. 依赖配置 (pom.xml)
-
-- `spring-boot-starter-web`：Web / JSON
-- `spring-boot-starter-test`：JUnit 5、MockMvc 等
-- `spring-boot-devtools`：开发热重启（optional）
-
-### 2. 应用配置
-
-- **`application.properties`**：`spring.application.name`、`spring.profiles.active=dev`
-- **`application-dev.properties`**：端口、调试日志
-- **`application-prod.properties`**：生产日志级别示例
+- **端口**：`application-dev.yml` → `server.port`（改完需重启）
+- **自定义业务项**：`application.yml` 中 `app.demo.site-name`、`app.demo.welcome-extra`
 
 ## 启动方式
 
-> **必须先进入项目根目录**（该目录下要有 `pom.xml`）。  
-> 若你在 `~/Desktop/zw` 之类上级目录执行 `mvn`，会报：`there is no POM in this directory`。
+> **必须先 `cd` 到本目录**（含 `pom.xml`）。
 
 ```bash
-cd /Users/zw/Desktop/zw/full-stack/backend/blog-api
-# 或相对路径：cd full-stack/backend/blog-api
-```
-
-### 1. 使用启动脚本
-
-```bash
-chmod +x start.sh
-./start.sh
-```
-
-### 2. 手动启动
-
-```bash
-mvn spring-boot:run
+cd full-stack/backend/blog-api   # 按你机器路径调整
+chmod +x start.sh && ./start.sh
 # 或
-mvn clean package -DskipTests
-java -jar target/blog-api-1.0.0.jar
+mvn spring-boot:run
 ```
 
-指定环境：
+生产 profile：
 
 ```bash
 java -jar target/blog-api-1.0.0.jar --spring.profiles.active=prod
@@ -92,22 +72,13 @@ java -jar target/blog-api-1.0.0.jar --spring.profiles.active=prod
 
 ## 访问测试
 
-接口前缀为 **`/api`**，响应均为 JSON（`ApiResult`）：
-
 | 说明 | 方法 | URL |
 |------|------|-----|
 | 欢迎语 | GET | http://localhost:8080/api/hello |
 | 健康检查 | GET | http://localhost:8080/api/health |
-
-示例响应：
-
-```json
-{"code":0,"message":"ok","data":"Hello, Spring Boot 3 + Java 17!"}
-```
-
-```json
-{"code":0,"message":"ok","data":{"status":"UP"}}
-```
+| **学习：最简 GET** | GET | http://localhost:8080/api/learn/ping |
+| **学习：读 YAML** | GET | http://localhost:8080/api/learn/config-yml-demo |
+| **学习：POST JSON echo** | POST | http://localhost:8080/api/learn/echo（Body 见文档） |
 
 ## 运行测试
 
@@ -115,30 +86,14 @@ java -jar target/blog-api-1.0.0.jar --spring.profiles.active=prod
 mvn test
 ```
 
-## 端口占用解决
+## 端口占用
 
 ```bash
 lsof -i :8080
 kill -9 <进程ID>
 ```
 
-## 常见问题
-
-### 1. 启动失败
-
-- Java 17
-- 端口未被占用
-- Maven 依赖已下载
-
-### 2. 依赖下载失败
-
-```bash
-mvn clean dependency:purge-local-repository package -DskipTests
-```
-
 ## 扩展建议
 
-- 数据库：JPA / MyBatis + MySQL 等
-- 安全：Spring Security / JWT
-- 文档：SpringDoc OpenAPI（Swagger）
-- 全局异常：`@ControllerAdvice` 把异常也包成 `ApiResult`
+- `@Valid`、全局异常 `@ControllerAdvice`
+- 数据库、Spring Security、SpringDoc（Swagger）

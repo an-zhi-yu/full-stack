@@ -127,16 +127,11 @@ fi
 # 类似于前端开发服务器的访问方式
 # 
 # 访问方式：
-# 1. 浏览器访问：直接在浏览器输入 http://localhost:8080
-#    - 会显示 "Hello, Spring Boot 3 + Java 17!"
-# 
-# 2. 接口访问（AJAX/Fetch）：
-#    - 前端代码中：fetch('http://localhost:8080/health')
-#    - 返回："ok"
-# 
-# 3. curl 命令行访问：
-#    - curl http://localhost:8080
-#    - curl http://localhost:8080/health
+# 1. 浏览器访问示例（返回 JSON）：
+#    - http://localhost:8080/api/hello
+#    - http://localhost:8080/api/learn/ping
+# 2. 接口访问（AJAX/Fetch）：需处理跨域或走 Vite 代理，见 docs/前端学后端-REST与YAML配置.md
+# 3. curl：curl http://localhost:8080/api/health
 # 
 # 这就是 RESTful API 的访问方式：
 # - 后端提供接口（Controller 中的方法）
@@ -145,8 +140,9 @@ fi
 # =============================================================================
 echo "正在启动应用..."
 echo "应用启动后，可以通过以下地址访问："
-echo "  - 首页：http://localhost:8080"
-echo "  - 健康检查：http://localhost:8080/health"
+echo "  - 示例 GET：http://localhost:8080/api/hello"
+echo "  - 健康检查：http://localhost:8080/api/health"
+echo "  - 学习用 ping：http://localhost:8080/api/learn/ping"
 echo ""
 echo "按 Ctrl+C 停止应用"
 echo ""

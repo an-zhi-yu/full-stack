@@ -1,0 +1,9 @@
+# 生产环境：启动时加 --spring.profiles.active=prod
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: warn
+    com.anzhiyu.blogapi: info

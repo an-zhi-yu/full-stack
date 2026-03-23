@@ -1,0 +1,17 @@
+# Spring Boot 支持 application.properties 与 application.yml，二选一或混用（后者会合并覆盖）
+# 本仓库统一用 YAML，层次更清晰，类似前端的缩进配置
+
+spring:
+  application:
+    name: blog-api
+  # 激活哪个 profile，就会额外加载 application-{profile}.yml
+  profiles:
+    active: dev
+
+# ── 自定义业务配置（非 Spring 内置 key）────────────────────────
+# 前缀 app.demo 对应 Java 类 @ConfigurationProperties(prefix = "app.demo")
+# kebab-case（site-name）会自动绑定到 Java 的 siteName
+app:
+  demo:
+    site-name: Blog API 学习项目
+    welcome-extra: 在 application.yml 或 application-dev.yml 里修改后重启服务生效
