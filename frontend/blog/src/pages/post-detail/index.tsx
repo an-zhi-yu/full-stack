@@ -1,25 +1,57 @@
 /**
  * 文章详情页（/post/:id）
  * 布局：面包屑 → 文章头 → [正文 + 侧边栏（目录 / 访问记录 / 相关文章）] → 上下篇导航
- * 正文从接口 GET /api/v1/posts/:id 加载
+ * 正文从接口 GET /api/v1/posts/:id 加载；进入后 POST /view 上报浏览；点赞走 POST /like（需登录）
  */
-import { useParams, Link, Navigate } from 'react-router-dom'
-import { Tag, Tooltip, Spin, Alert } from 'antd'
-import { EyeOutlined, HistoryOutlined } from '@ant-design/icons'
+import { useState, useEffect } from 'react'
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
+import { Tag, Tooltip, Spin, Alert, Button, message } from 'antd'
+import { EyeOutlined, HistoryOutlined, LikeOutlined, LikeFilled } from '@ant-design/icons'
 import { usePostsContext } from '@/contexts/PostsContext'
 import { getPostsByCategory } from '@/data/posts/index'
 import { ContentRenderer } from '@/components/post/ContentRenderer'
 import { useVisitTracker } from '@/hooks/useVisitTracker'
 import { usePostDetail } from '@/hooks/usePostDetail'
+import { postToggleLike } from '@/api/blogApi'
 import { timeAgo, formatDuration } from '@/utils/visitStore'
 import styles from './index.module.less'
 
 export default function PostDetail() {
   const { id = '' } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { posts } = usePostsContext()
   const { post, loading, error } = usePostDetail(id)
 
   const visitStats = useVisitTracker(id)
+
+  const [likeBusy, setLikeBusy] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
+  const [liked, setLiked] = useState(false)
+
+  useEffect(() => {
+    if (!post) return
+    setLikeCount(post.likeCount ?? 0)
+    setLiked(post.likedByCurrentUser ?? false)
+  }, [post?.id, post?.likeCount, post?.likedByCurrentUser])
+
+  async function handleLike() {
+    if (!localStorage.getItem('token')) {
+      message.warning('请先登录再点赞')
+      navigate('/login')
+      return
+    }
+    if (!post) return
+    setLikeBusy(true)
+    try {
+      const r = await postToggleLike(post.id)
+      setLikeCount(r.likeCount)
+      setLiked(r.likedByCurrentUser)
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : '点赞失败')
+    } finally {
+      setLikeBusy(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -73,13 +105,31 @@ export default function PostDetail() {
           <span className={styles.metaItem}>📅 {post.date}</span>
           <span className={styles.metaDot}>·</span>
           <span className={styles.metaItem}>⏱ {post.readTime} min read</span>
+          <span className={styles.metaDot}>·</span>
+          <Tooltip title="服务端累计浏览（进入本页会自动上报一次）">
+            <span className={styles.metaItem}>
+              <EyeOutlined style={{ marginRight: 4 }} />
+              浏览 {post.viewCount ?? 0}
+            </span>
+          </Tooltip>
+          <span className={styles.metaDot}>·</span>
+          <span className={styles.metaItem}>点赞 {likeCount}</span>
+          <Button
+            type={liked ? 'primary' : 'default'}
+            size="small"
+            loading={likeBusy}
+            icon={liked ? <LikeFilled /> : <LikeOutlined />}
+            onClick={handleLike}
+            style={{ marginLeft: 8 }}
+          >
+            {liked ? '已赞' : '点赞'}
+          </Button>
           {visitStats.count > 0 && (
             <>
               <span className={styles.metaDot}>·</span>
-              <Tooltip title={`平均停留 ${formatDuration(visitStats.avgDuration)}`}>
+              <Tooltip title={`本地记录：平均停留 ${formatDuration(visitStats.avgDuration)}`}>
                 <span className={styles.metaItem}>
-                  <EyeOutlined style={{ marginRight: 4 }} />
-                  {visitStats.count} 次访问
+                  本机访问 {visitStats.count} 次
                 </span>
               </Tooltip>
             </>

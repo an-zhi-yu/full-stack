@@ -26,6 +26,8 @@ public record PostSummary(
         List<String> tags,
         String date,
         int readTime,
-        Boolean pinned
+        Boolean pinned,
+        long viewCount,
+        long likeCount
 ) {
 }

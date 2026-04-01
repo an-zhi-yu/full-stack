@@ -8,15 +8,13 @@ import { Routes, Route } from 'react-router-dom'
 import { PageTransition } from '@/components/transition/PageTransition'
 
 // ── 懒加载页面（每个路由独立 chunk） ──────────────────────────
-const Home       = lazy(() => import('@/pages/home'))
-const Posts      = lazy(() => import('@/pages/posts'))
+const Home = lazy(() => import('@/pages/home'))
+const Posts = lazy(() => import('@/pages/posts'))
 const PostDetail = lazy(() => import('@/pages/post-detail'))
-const Category   = lazy(() => import('@/pages/category'))
-const About      = lazy(() => import('@/pages/about'))
-const Users      = lazy(() => import('@/pages/users'))
-const UserDetail = lazy(() => import('@/pages/user-detail'))
-const Login      = lazy(() => import('@/pages/login'))
-const NotFound   = lazy(() => import('@/pages/not-found'))
+const Category = lazy(() => import('@/pages/category'))
+const About = lazy(() => import('@/pages/about'))
+const Login = lazy(() => import('@/pages/login'))
+const NotFound = lazy(() => import('@/pages/not-found'))
 
 /** 全屏加载占位（Suspense fallback） */
 function Loading() {
@@ -32,17 +30,57 @@ export function AppRoutes() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-        <Route path="/"               element={<PageTransition><Home /></PageTransition>} />
-        <Route path="/posts"          element={<PageTransition><Posts /></PageTransition>} />
-        <Route path="/post/:id"       element={<PageTransition><PostDetail /></PageTransition>} />
-        <Route path="/category/:slug" element={<PageTransition><Category /></PageTransition>} />
-        <Route path="/users"          element={<PageTransition><Users /></PageTransition>} />
-        <Route path="/users/:id"      element={<PageTransition><UserDetail /></PageTransition>} />
-        <Route path="/login"          element={<PageTransition><Login /></PageTransition>} />
-        <Route path="/about"          element={<PageTransition><About /></PageTransition>} />
-        <Route path="/404"            element={<NotFound />} />
+        <Route
+          path="/login"
+          element={
+            <PageTransition>
+              <Login />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <PageTransition>
+              <Home />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/posts"
+          element={
+            <PageTransition>
+              <Posts />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/post/:id"
+          element={
+            <PageTransition>
+              <PostDetail />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/category/:slug"
+          element={
+            <PageTransition>
+              <Category />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <PageTransition>
+              <About />
+            </PageTransition>
+          }
+        />
+        <Route path="/404" element={<NotFound />} />
         {/* 所有未匹配路由跳转 404 */}
-        <Route path="*"               element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   )

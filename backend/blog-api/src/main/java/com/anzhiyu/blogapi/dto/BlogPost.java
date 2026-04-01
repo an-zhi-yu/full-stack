@@ -19,8 +19,4 @@ public record BlogPost(
         Boolean pinned,
         JsonNode content
 ) {
-
-    public PostSummary toSummary() {
-        return new PostSummary(id, title, subtitle, category, categorySlug, tags, date, readTime, pinned);
-    }
 }

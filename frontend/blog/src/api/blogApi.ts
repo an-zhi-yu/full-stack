@@ -1,3 +1,5 @@
+import { request } from '@/api/request'
+
 /**
  * 博客后端 API（通过 Vite proxy 访问 /api → localhost:8080）
  *
@@ -26,6 +28,8 @@ export interface PostSummaryDto {
   date: string
   readTime: number
   pinned?: boolean
+  viewCount?: number
+  likeCount?: number
 }
 
 function unwrap<T>(j: ApiResult<T>): T {
@@ -48,6 +52,8 @@ export function stubFromSummary(s: PostSummaryDto): Post {
     readTime: s.readTime,
     pinned: s.pinned,
     content: [],
+    viewCount: s.viewCount,
+    likeCount: s.likeCount,
   }
 }
 
@@ -89,7 +95,12 @@ export async function fetchPostDetail(id: string): Promise<Post | null> {
     return existing
   }
   const p = (async () => {
-    const res = await fetch(`/api/v1/posts/${encodeURIComponent(id)}`)
+    const headers: HeadersInit = {}
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
+    }
+    const res = await fetch(`/api/v1/posts/${encodeURIComponent(id)}`, { headers })
     const j = (await res.json()) as ApiResult<Record<string, unknown>>
     if (res.status === 404) {
       return null
@@ -117,5 +128,43 @@ function normalizeBlogPost(data: Record<string, unknown>): Post {
     readTime: Number(data.readTime),
     pinned: data.pinned as boolean | undefined,
     content: (data.content as ContentBlock[]) ?? [],
+    viewCount: data.viewCount !== undefined ? Number(data.viewCount) : undefined,
+    likeCount: data.likeCount !== undefined ? Number(data.likeCount) : undefined,
+    likedByCurrentUser: Boolean(data.likedByCurrentUser),
   }
+}
+
+// ── 浏览上报：与详情去重，避免 StrictMode 双次 effect 刷两次浏览 ─────────────
+const viewInflight = new Map<string, Promise<number>>()
+
+/** POST /posts/{id}/view，返回最新 viewCount；无需登录 */
+export async function postRecordView(postId: string): Promise<number> {
+  const existing = viewInflight.get(postId)
+  if (existing) return existing
+  const p = (async () => {
+    const res = await fetch(`/api/v1/posts/${encodeURIComponent(postId)}/view`, { method: 'POST' })
+    const j = (await res.json()) as ApiResult<{ viewCount: number }>
+    if (res.status === 404 || j.code !== 0) {
+      throw new Error(j.message || `浏览上报失败 HTTP ${res.status}`)
+    }
+    return j.data.viewCount
+  })().finally(() => {
+    viewInflight.delete(postId)
+  })
+  viewInflight.set(postId, p)
+  return p
+}
+
+export interface PostLikeResult {
+  likeCount: number
+  likedByCurrentUser: boolean
+}
+
+/** POST /posts/{id}/like，需登录；切换点赞状态 */
+export async function postToggleLike(postId: string): Promise<PostLikeResult> {
+  const j = (await request.post(`/v1/posts/${encodeURIComponent(postId)}/like`)) as ApiResult<PostLikeResult>
+  if (j.code !== 0) {
+    throw new Error(j.message || '点赞失败')
+  }
+  return j.data
 }

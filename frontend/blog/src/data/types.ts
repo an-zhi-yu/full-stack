@@ -69,6 +69,12 @@ export interface Post {
   readTime: number
   pinned?: boolean
   content: ContentBlock[]
+  /** 后端累计浏览（上报 view 后会更新） */
+  viewCount?: number
+  /** 后端累计点赞人数 */
+  likeCount?: number
+  /** 当前登录用户是否已赞（未登录为 false） */
+  likedByCurrentUser?: boolean
 }
 
 export interface Category {

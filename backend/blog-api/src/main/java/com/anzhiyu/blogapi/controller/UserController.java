@@ -43,6 +43,17 @@ public class UserController {
   }
 
   /**
+   * 获取用户详情
+   * 
+   * @param id 用户ID
+   * @return 用户详情信息
+   */
+  @GetMapping("/{id}")
+  public ApiResult<UserDTO> getUserDetail(@PathVariable String id) {
+    return ApiResult.ok(userService.getById(id));
+  }
+
+  /**
    * 创建用户
    * 
    * @param request 创建用户请求

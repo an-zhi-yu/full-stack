@@ -32,6 +32,9 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>  <!-- 源代码编译版本 -->
         <maven.compiler.target>${java.version}</maven.compiler.target>  <!-- 目标编译版本 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  <!-- 源代码编码 -->
+        <!-- MapStruct：编译期生成 Entity→DTO 映射实现类，Spring 里等价于手写 mapper 单例 -->
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <lombok.mapstruct.binding.version>0.2.0</lombok.mapstruct.binding.version>
     </properties>
 
     <!-- 
@@ -117,6 +120,18 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- MapStruct 接口在编译期生成 UserMapperImpl（带 @Component），可构造注入 -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- JWT：签发与解析 Token，用的是 JJWT -->
         <dependency>
           <groupId>io.jsonwebtoken</groupId>
@@ -140,6 +155,33 @@
     <!-- 构建配置 -->
     <build>
         <plugins>
+            <!--
+              Lombok 与 MapStruct 都是注解处理器：必须在 compiler 里声明顺序，
+              否则会出现「找不到 builder / 找不到生成类」的编译错误。
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>${lombok.mapstruct.binding.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <!-- 
               Spring Boot Maven 插件
               作用：打包可执行的 JAR 文件

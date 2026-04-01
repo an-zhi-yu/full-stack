@@ -9,22 +9,47 @@ import com.anzhiyu.blogapi.dto.UserDTO;
 import com.anzhiyu.blogapi.dto.UserRegisterDTO;
 import com.anzhiyu.blogapi.dto.UserUpdateDTO;
 import com.anzhiyu.blogapi.entity.UserEntity;
+import com.anzhiyu.blogapi.mapper.UserMapper;
 import com.anzhiyu.blogapi.service.UserService;
 import com.anzhiyu.blogapi.common.util.BeanUtil;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+  private final UserMapper userMapper;
+
+  /**
+   * 构造器注入：Spring 自动把编译期生成的 {@code UserMapperImpl} 传进来
+   * （等价于前端依赖注入一个「格式化函数」单例）。
+   */
+  public UserServiceImpl(UserMapper userMapper) {
+    this.userMapper = userMapper;
+  }
+
   // 模拟用户数据：内部用 UserEntity 存储（包含密码），对外只返回脱敏后的 UserDTO
-  private final static Map<String, UserEntity> USER_DB = new HashMap<>();
+  private static final Map<String, UserEntity> USER_DB = new HashMap<>();
 
   static {
-    // 为了方便你测试登录，这里内置一些 demo 用户，密码都设为 123456
-    USER_DB.put("1", UserEntity.builder().id("1").username("test1").password("123456").build());
-    USER_DB.put("2", UserEntity.builder().id("2").username("test2").password("123456").build());
-    USER_DB.put("3", UserEntity.builder().id("3").username("test3").password("123456").build());
-    USER_DB.put("4", UserEntity.builder().id("4").username("test4").password("123456").build());
-    USER_DB.put("5", UserEntity.builder().id("5").username("test5").password("123456").build());
+    // 为了方便你测试登录，这里内置一些 demo 用户，密码都设为 123456；其余资料字段用于验证「全量 toDto」
+    USER_DB.put("1", demoUser("1", "test1", "user1@example.com"));
+    USER_DB.put("2", demoUser("2", "test2", "user2@example.com"));
+    USER_DB.put("3", demoUser("3", "test3", "user3@example.com"));
+    USER_DB.put("4", demoUser("4", "test4", "user4@example.com"));
+    USER_DB.put("5", demoUser("5", "test5", "user5@example.com"));
+  }
+
+  private static UserEntity demoUser(String id, String username, String email) {
+    return UserEntity.builder()
+        .id(id)
+        .username(username)
+        .password("123456")
+        .email(email)
+        .phone("1380000" + id)
+        .city("Demo City")
+        .country("CN")
+        .bio("内置演示账号 " + username)
+        .build();
   }
 
   /**
@@ -36,7 +61,7 @@ public class UserServiceImpl implements UserService {
   public List<UserDTO> getAllUsers() {
     // 对外只返回不含密码的 UserDTO 列表
     return USER_DB.values().stream()
-        .map(this::toDto)
+        .map(userMapper::toDto)
         .toList();
   }
 
@@ -52,7 +77,7 @@ public class UserServiceImpl implements UserService {
     UserEntity entity = UserEntity.builder().id(id).username(request.getUsername()).password(request.getPassword())
         .build();
     USER_DB.put(id, entity);
-    return toDto(entity);
+    return userMapper.toDto(entity);
   }
 
   /**
@@ -70,7 +95,7 @@ public class UserServiceImpl implements UserService {
     }
     // 这里用 BeanUtil 把 request 里的非空字段拷贝到 entity 上（字段名需对齐）
     BeanUtil.copyNonNullProperties(request, entity);
-    return toDto(entity);
+    return userMapper.toDto(entity);
   }
 
   /**
@@ -82,7 +107,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getById(String id) {
     UserEntity entity = USER_DB.get(id);
-    return entity == null ? null : toDto(entity);
+    return entity == null ? null : userMapper.toDto(entity);
   }
 
   /**
@@ -98,7 +123,7 @@ public class UserServiceImpl implements UserService {
         .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
         .findFirst()
         .orElse(null);
-    return entity == null ? null : toDto(entity);
+    return entity == null ? null : userMapper.toDto(entity);
   }
 
   /**
@@ -111,14 +136,5 @@ public class UserServiceImpl implements UserService {
   public String logout(String id) {
     USER_DB.remove(id);
     return "ok";
-  }
-
-  /**
-   * 内部实体 -> 对外 DTO（去掉 password）
-   */
-  private UserDTO toDto(UserEntity entity) {
-    return UserDTO.builder().id(entity.getId()).username(entity.getUsername()).email(entity.getEmail())
-        .phone(entity.getPhone()).address(entity.getAddress()).city(entity.getCity()).state(entity.getState())
-        .zip(entity.getZip()).country(entity.getCountry()).website(entity.getWebsite()).bio(entity.getBio()).build();
   }
 }

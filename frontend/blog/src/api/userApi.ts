@@ -11,6 +11,12 @@ export interface UserLoginDTO {
   password: string
 }
 
+// 注册请求体，与后端 UserRegisterDTO 对齐
+export interface UserRegisterDTO {
+  username: string
+  password: string
+}
+
 export interface UserLoginResponseDTO {
   token: string
   user: UserDTO
@@ -36,15 +42,8 @@ export async function login(payload: UserLoginDTO): Promise<UserLoginResponseDTO
   return unwrap(res as unknown as ApiResult<UserLoginResponseDTO>)
 }
 
-// 用户列表：GET /api/v1/user
-export async function getUsers(): Promise<UserDTO[]> {
-  const res = await request.get<ApiResult<UserDTO[]>>('/v1/user')
-  return unwrap(res as unknown as ApiResult<UserDTO[]>)
-}
-
-// 用户详情：GET /api/v1/user/{id}
-export async function getUserById(id: string): Promise<UserDTO> {
-  const res = await request.get<ApiResult<UserDTO>>(`/v1/user/${id}`)
+// 注册：POST /api/v1/user
+export async function register(payload: UserRegisterDTO): Promise<UserDTO> {
+  const res = await request.post<ApiResult<UserDTO>>('/v1/user', payload)
   return unwrap(res as unknown as ApiResult<UserDTO>)
 }
-

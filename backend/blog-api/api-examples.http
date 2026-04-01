@@ -4,8 +4,15 @@ GET http://localhost:8080/api/v1/posts
 ### 列表（按分类）
 GET http://localhost:8080/api/v1/posts?categorySlug=java
 
-### 详情（与前端文章 id 一致）
+### 详情（与前端文章 id 一致；可选 Header：Authorization: Bearer <token> 以返回 likedByCurrentUser）
 GET http://localhost:8080/api/v1/posts/java-spring-boot-blog-api
+
+### 浏览 +1（无需 token）
+POST http://localhost:8080/api/v1/posts/java-spring-boot-blog-api/view
+
+### 点赞切换（需 JWT）
+POST http://localhost:8080/api/v1/posts/java-spring-boot-blog-api/like
+Authorization: Bearer <粘贴登录返回的 token>
 
 ### 新建（VS Code REST Client / IntelliJ HTTP Client 可点 Run）
 POST http://localhost:8080/api/v1/posts
