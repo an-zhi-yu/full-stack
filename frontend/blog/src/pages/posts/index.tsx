@@ -6,11 +6,12 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Input, Tag, Empty } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import allPosts from '@/data/posts/index'
+import { usePostsContext } from '@/contexts/PostsContext'
 import { categories } from '@/data/categories'
 import styles from './index.module.less'
 
 export default function Posts() {
+  const { posts: allPosts } = usePostsContext()
   // 当前筛选的分类 slug（空字符串 = 全部）
   const [activeSlug, setActiveSlug] = useState('')
   // 搜索关键词
@@ -26,7 +27,7 @@ export default function Posts() {
                            || p.tags.some((t) => t.toLowerCase().includes(kw))
       return matchCat && matchKw
     })
-  }, [activeSlug, keyword])
+  }, [activeSlug, keyword, allPosts])
 
   return (
     <div className={styles.page}>

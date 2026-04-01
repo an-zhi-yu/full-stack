@@ -13,7 +13,7 @@ import { useMemo } from 'react'
 import { Pie, Column, Bar } from '@ant-design/plots'
 import { Link } from 'react-router-dom'
 import { categories } from '@/data/categories'
-import allPosts from '@/data/posts/index'
+import type { Post } from '@/data/types'
 import { getAllVisitCounts } from '@/utils/visitStore'
 import { useThemeStore } from '@/store/theme'
 import styles from './DashboardCharts.module.less'
@@ -44,8 +44,12 @@ interface CategoryItem {
   color: string
 }
 
+interface Props {
+  posts: Post[]
+}
+
 // ── 主组件 ────────────────────────────────────────────────────
-export function DashboardCharts() {
+export function DashboardCharts({ posts: allPosts }: Props) {
   const dark = useThemeStore((s) => s.dark)
   // @ant-design/plots 内置主题：classicDark / classic，无需手动计算颜色
   const theme = dark ? 'classicDark' : 'classic'
@@ -59,7 +63,7 @@ export function DashboardCharts() {
     return categories
       .map((c) => ({ name: c.name, value: countMap[c.slug] ?? 0, color: c.color }))
       .filter((d) => d.value > 0)
-  }, [])
+  }, [allPosts])
 
   // ② 阅读时长数据（截取标题）
   const readTimeData = useMemo(
@@ -68,7 +72,7 @@ export function DashboardCharts() {
         name: p.title.length > 10 ? p.title.slice(0, 10) + '…' : p.title,
         分钟: p.readTime,
       })),
-    []
+    [allPosts],
   )
 
   // ③ 发布时间线（最近 14 天）
@@ -80,7 +84,7 @@ export function DashboardCharts() {
       countMap[key] = (countMap[key] ?? 0) + 1
     })
     return days.map((day) => ({ day, 文章数: countMap[day] ?? 0 }))
-  }, [])
+  }, [allPosts])
 
   // ④ 热门文章 Top 5（基于 localStorage）
   const hotData = useMemo(() => {
@@ -93,7 +97,7 @@ export function DashboardCharts() {
       }))
       .sort((a, b) => b.访问次数 - a.访问次数)
       .slice(0, 5)
-  }, [])
+  }, [allPosts])
 
   const hasVisits = hotData.some((d) => d.访问次数 > 0)
 

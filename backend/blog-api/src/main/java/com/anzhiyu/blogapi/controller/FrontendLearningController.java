@@ -19,7 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/learn") // ② 类级别前缀：下面每个方法的 URL 都会带上 /api/learn
 public class FrontendLearningController {
 
-    private final AppDemoProperties demoProps; // ③ 构造器注入：Spring 把 YAML 绑定好的配置对象塞进来（单例）
+    /**
+     * ③ 构造器注入：不是你手动 new，而是 Spring 启动时扫描到本类需要 {@link AppDemoProperties}，
+     * 容器里已有「读 YAML 生成」的 Bean，就传进构造方法。详见 docs/Spring依赖注入简说.md
+     */
+    private final AppDemoProperties demoProps;
 
     @Value("${server.port:8080}") // ④ 再演示一种读法：按「点路径」取单个配置；冒号后是默认值（YAML 没写 port 时用）
     private int serverPort;

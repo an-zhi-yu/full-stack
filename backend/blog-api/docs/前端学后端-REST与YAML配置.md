@@ -20,6 +20,29 @@
 
 ---
 
+## 1.1 为什么浏览器「只输入网址」测不了 POST？
+
+地址栏发起的是 **GET**，没有请求体，所以 **POST / PUT / DELETE** 必须用下面任一方式：
+
+| 方式 | 说明 |
+|------|------|
+| **curl** | 终端一行搞定，见下节示例 |
+| **Postman / Insomnia** | 选方法 POST，Body → raw → JSON |
+| **Chrome DevTools** | 打开任意页面 → Console 里写 `fetch(...)`（见 §2） |
+| **VS Code 插件** | REST Client：打开仓库根目录 **`api-examples.http`**，点请求上方的 Run |
+
+**curl 示例（echo 接口）：**
+
+```bash
+curl -s -X POST http://localhost:8080/api/learn/echo \
+  -H "Content-Type: application/json" \
+  -d '{"name":"张三","note":"hello"}'
+```
+
+依赖注入为何能拿到 `demoProps`：见 [`Spring依赖注入简说.md`](Spring依赖注入简说.md)。
+
+---
+
 ## 2. POST JSON Echo：`/api/learn/echo` + `fetch`
 
 后端要求：**方法 POST**、**头 `Content-Type: application/json`**、**body 为 JSON**。
@@ -33,11 +56,14 @@ const res = await fetch('http://localhost:8080/api/learn/echo', {
   headers: {
     'Content-Type': 'application/json', // 必须：否则 Spring 可能 415
   },
+  // ⚠️ fetch 没有 `data` 字段；必须用 body 且为字符串
   body: JSON.stringify({ name: '张三', note: 'hello' }),
 })
 const json = await res.json()
 console.log(json) // { code, message, data: { name, note } }
 ```
+
+**常见 400/415**：写了 `data: {...}`、或忘了 `JSON.stringify`、或没设 `Content-Type: application/json`。详见 [Java后端新手问答.md](Java后端新手问答.md) §5。
 
 ### 2.2 跨域（CORS）你在前端会踩什么坑？
 
@@ -147,3 +173,6 @@ app:
 | POST | `/api/learn/echo` | JSON 入参 echo |
 | GET | `/api/hello` | 业务示例 |
 | GET | `/api/health` | 健康检查 |
+| GET | `/api/v1/posts` | 文章列表（可选 `?categorySlug=`） |
+| GET | `/api/v1/posts/{id}` | 文章详情 |
+| POST/PUT/DELETE | `/api/v1/posts` … | 见 [REST-博客文章API.md](REST-博客文章API.md) |

@@ -1,40 +1,55 @@
 /**
  * 文章详情页（/post/:id）
  * 布局：面包屑 → 文章头 → [正文 + 侧边栏（目录 / 访问记录 / 相关文章）] → 上下篇导航
+ * 正文从接口 GET /api/v1/posts/:id 加载
  */
 import { useParams, Link, Navigate } from 'react-router-dom'
-import { Tag, Tooltip } from 'antd'
+import { Tag, Tooltip, Spin, Alert } from 'antd'
 import { EyeOutlined, HistoryOutlined } from '@ant-design/icons'
-import { getPostById, getPostsByCategory } from '@/data/posts/index'
-import allPosts from '@/data/posts/index'
+import { usePostsContext } from '@/contexts/PostsContext'
+import { getPostsByCategory } from '@/data/posts/index'
 import { ContentRenderer } from '@/components/post/ContentRenderer'
 import { useVisitTracker } from '@/hooks/useVisitTracker'
+import { usePostDetail } from '@/hooks/usePostDetail'
 import { timeAgo, formatDuration } from '@/utils/visitStore'
 import styles from './index.module.less'
 
 export default function PostDetail() {
   const { id = '' } = useParams<{ id: string }>()
-  const post = getPostById(id)
+  const { posts } = usePostsContext()
+  const { post, loading, error } = usePostDetail(id)
 
-  // 追踪本次访问，返回历史统计
   const visitStats = useVisitTracker(id)
+
+  if (loading) {
+    return (
+      <div className={styles.page} style={{ display: 'flex', justifyContent: 'center', padding: 64 }}>
+        <Spin size="large" tip="加载正文…" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={styles.page} style={{ padding: 24 }}>
+        <Alert type="error" message={error} showIcon />
+      </div>
+    )
+  }
 
   if (!post) return <Navigate to="/404" replace />
 
-  // 目录：从内容块提取 heading
   const toc = post.content.filter(
     (b): b is Extract<typeof b, { type: 'heading' }> => b.type === 'heading',
   )
 
-  // 相关文章：同分类、排除自身、最多 4 篇
-  const related = getPostsByCategory(post.categorySlug)
+  const related = getPostsByCategory(posts, post.categorySlug)
     .filter((p) => p.id !== post.id)
     .slice(0, 4)
 
-  // 上一篇 / 下一篇
-  const idx  = allPosts.findIndex((p) => p.id === post.id)
-  const prev = idx > 0                   ? allPosts[idx - 1] : null
-  const next = idx < allPosts.length - 1 ? allPosts[idx + 1] : null
+  const idx = posts.findIndex((p) => p.id === post.id)
+  const prev = idx > 0 ? posts[idx - 1] : null
+  const next = idx >= 0 && idx < posts.length - 1 ? posts[idx + 1] : null
 
   return (
     <div className={styles.page}>
@@ -58,7 +73,6 @@ export default function PostDetail() {
           <span className={styles.metaItem}>📅 {post.date}</span>
           <span className={styles.metaDot}>·</span>
           <span className={styles.metaItem}>⏱ {post.readTime} min read</span>
-          {/* 实时访问计数 */}
           {visitStats.count > 0 && (
             <>
               <span className={styles.metaDot}>·</span>
@@ -88,7 +102,6 @@ export default function PostDetail() {
 
         <aside className={styles.sidebar}>
 
-          {/* 目录 */}
           {toc.length > 0 && (
             <div className={styles.sideCard}>
               <div className={styles.sideCardTitle}>📑 目录</div>
@@ -106,14 +119,12 @@ export default function PostDetail() {
             </div>
           )}
 
-          {/* 访问记录 */}
           <div className={styles.sideCard}>
             <div className={styles.sideCardTitle}>
               <EyeOutlined style={{ marginRight: 6 }} />
               访问记录
             </div>
 
-            {/* 统计摘要 */}
             <div className={styles.visitSummary}>
               <div className={styles.visitStat}>
                 <span className={styles.visitStatVal}>{visitStats.count}</span>
@@ -133,7 +144,6 @@ export default function PostDetail() {
               </div>
             </div>
 
-            {/* 最近访问列表 */}
             {visitStats.recentRecords.length > 0 && (
               <div className={styles.visitList}>
                 <div className={styles.visitListTitle}>
@@ -160,7 +170,6 @@ export default function PostDetail() {
             )}
           </div>
 
-          {/* 相关文章 */}
           {related.length > 0 && (
             <div className={styles.sideCard}>
               <div className={styles.sideCardTitle}>🔗 相关文章</div>
@@ -176,7 +185,6 @@ export default function PostDetail() {
         </aside>
       </div>
 
-      {/* 上/下篇导航 */}
       <div className={styles.postNav}>
         {prev ? (
           <Link to={`/post/${prev.id}`} className={`${styles.navCard} ${styles.navPrev}`}>

@@ -1,0 +1,30 @@
+### 列表
+GET http://localhost:8080/api/v1/posts
+
+### 列表（按分类）
+GET http://localhost:8080/api/v1/posts?categorySlug=java
+
+### 详情（与前端文章 id 一致）
+GET http://localhost:8080/api/v1/posts/java-spring-boot-blog-api
+
+### 新建（VS Code REST Client / IntelliJ HTTP Client 可点 Run）
+POST http://localhost:8080/api/v1/posts
+Content-Type: application/json
+
+{
+  "title": "REST 测试",
+  "subtitle": "副标题",
+  "category": "Java 后端",
+  "categorySlug": "java",
+  "tags": ["REST"],
+  "date": "2026-03-25",
+  "readTime": 1,
+  "pinned": false,
+  "content": [{ "type": "paragraph", "text": "正文" }]
+}
+
+### Echo（练习 POST）
+POST http://localhost:8080/api/learn/echo
+Content-Type: application/json
+
+{ "name": "张三", "note": "hello" }

@@ -6,6 +6,13 @@ export default defineConfig({
     plugins: [react()],
     server: {
         port: 8888,
+        // 开发时 /api 转发到 Spring Boot，前端可用 fetch('/api/...') 同源访问，避免 CORS
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8080',
+                changeOrigin: true,
+            },
+        },
     },
     resolve: {
         alias: {

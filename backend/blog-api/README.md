@@ -4,7 +4,12 @@
 
 这是一个基于 Spring Boot 3 和 Java 17 的博客 API 项目，用于演示如何快速搭建一个 Spring Boot 应用，并包含常见**工程化实践**（统一响应、CORS、分层、多环境、接口测试）。
 
-**前端转后端推荐阅读**：[`docs/前端学后端-REST与YAML配置.md`](docs/前端学后端-REST与YAML配置.md)（GET/POST、fetch、跨域、YAML、`application.yml`）。
+**前端转后端推荐阅读**：
+
+- [`docs/前端学后端-REST与YAML配置.md`](docs/前端学后端-REST与YAML配置.md) — GET/POST、**快速测 POST**、fetch、跨域、YAML  
+- [`docs/Spring依赖注入简说.md`](docs/Spring依赖注入简说.md) — `demoProps` 谁传进来的  
+- [`docs/Java后端新手问答.md`](docs/Java后端新手问答.md) — **Bean / import / fetch 报 400** 等  
+- [`docs/REST-博客文章API.md`](docs/REST-博客文章API.md) — **REST 标准 URL**（列表/详情/增删改）
 
 ## 技术栈
 
@@ -27,13 +32,16 @@ backend/blog-api/
 │   │   └── WebMvcConfig.java           # CORS
 │   ├── controller/
 │   │   ├── HelloController.java
+│   │   ├── PostController.java              # REST：/api/v1/posts
 │   │   └── FrontendLearningController.java  # 注释型：ping / echo / 读配置
+│   ├── repository/PostRepository.java       # 内存 + 启动加载 sample-posts.json
 │   ├── dto/
 │   └── service/HelloService.java
 ├── src/main/resources/
-│   ├── application.yml                 # 公共 + spring.profiles.active
-│   ├── application-dev.yml             # 端口、日志、可覆盖 app.demo
-│   └── application-prod.yml
+│   ├── application.yml
+│   ├── application-dev.yml
+│   ├── application-prod.yml
+│   └── data/sample-posts.json            # 与博客 id 对齐的示例文章（启动载入）
 └── src/test/java/.../*Test.java
 ```
 
@@ -52,6 +60,10 @@ backend/blog-api/
 
 - **端口**：`application-dev.yml` → `server.port`（改完需重启）
 - **自定义业务项**：`application.yml` 中 `app.demo.site-name`、`app.demo.welcome-extra`
+
+## 与前端博客联调
+
+前端仓库在 `full-stack/frontend/blog`：先 **`npm run export-posts`** 生成 `posts-full.json`，再启动本服务；前端 `npm run dev` 通过 **Vite `/api` 代理**访问文章接口。
 
 ## 启动方式
 
@@ -79,6 +91,17 @@ java -jar target/blog-api-1.0.0.jar --spring.profiles.active=prod
 | **学习：最简 GET** | GET | http://localhost:8080/api/learn/ping |
 | **学习：读 YAML** | GET | http://localhost:8080/api/learn/config-yml-demo |
 | **学习：POST JSON echo** | POST | http://localhost:8080/api/learn/echo（Body 见文档） |
+
+### 博客文章 REST（`/api/v1/posts`）
+
+| 说明 | 方法 | URL |
+|------|------|-----|
+| 列表 | GET | http://localhost:8080/api/v1/posts |
+| 按分类 | GET | http://localhost:8080/api/v1/posts?categorySlug=java |
+| 详情 | GET | http://localhost:8080/api/v1/posts/java-spring-boot-blog-api |
+| 新建 | POST | 同上前缀，Body JSON（见 REST 文档） |
+| 全量更新 | PUT | /api/v1/posts/{id} |
+| 删除 | DELETE | /api/v1/posts/{id}（成功 **204** 无 body） |
 
 ## 运行测试
 

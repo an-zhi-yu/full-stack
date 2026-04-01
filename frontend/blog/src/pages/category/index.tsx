@@ -5,17 +5,19 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Tag } from 'antd'
 import { categories } from '@/data/categories'
+import { usePostsContext } from '@/contexts/PostsContext'
 import { getPostsByCategory } from '@/data/posts/index'
 import styles from './index.module.less'
 
 export default function Category() {
   const { slug = '' } = useParams<{ slug: string }>()
+  const { posts: allPosts } = usePostsContext()
 
   // 查找分类信息，不存在则重定向到 404
   const cat = categories.find((c) => c.slug === slug)
   if (!cat) return <Navigate to="/404" replace />
 
-  const posts = getPostsByCategory(slug)
+  const posts = getPostsByCategory(allPosts, slug)
 
   return (
     <div className={styles.page}>

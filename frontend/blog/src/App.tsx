@@ -5,6 +5,7 @@ import zhCN from 'antd/locale/zh_CN'
 import { useThemeStore } from '@/store/theme'
 import { getThemeConfig } from '@/styles/theme'
 import { AnimatedLayout } from '@/components/layout/AnimatedLayout'
+import { PostsProvider } from '@/contexts/PostsContext'
 import { AppRoutes } from '@/routes'
 
 /**
@@ -24,9 +25,11 @@ function App() {
   return (
     <ConfigProvider locale={zhCN} theme={getThemeConfig(dark)}>
       <BrowserRouter>
-        <AnimatedLayout>
-          <AppRoutes />
-        </AnimatedLayout>
+        <PostsProvider>
+          <AnimatedLayout>
+            <AppRoutes />
+          </AnimatedLayout>
+        </PostsProvider>
       </BrowserRouter>
     </ConfigProvider>
   )

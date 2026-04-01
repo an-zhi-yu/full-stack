@@ -1,0 +1,50 @@
+[
+  {
+    "id": "java-variables-types",
+    "title": "Java 变量与数据类型完全指南",
+    "subtitle": "从 int 到 String，彻底搞懂 Java 类型系统；含与前端 JS/TS 的对比",
+    "category": "Java 后端",
+    "categorySlug": "java",
+    "tags": ["Java", "基础入门", "变量", "数据类型"],
+    "date": "2026-03-12",
+    "readTime": 8,
+    "pinned": true,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "【接口摘要】完整正文见前端博客静态数据；此处演示 REST 返回的 content 块结构与 types.ts 中 Post 一致。"
+      }
+    ]
+  },
+  {
+    "id": "java-spring-boot-blog-api",
+    "title": "Spring Boot 入门：blog-api 项目导读（前端对照）",
+    "subtitle": "pom、启动类、@RestController、application.yml；案例在 full-stack/backend/blog-api",
+    "category": "Java 后端",
+    "categorySlug": "java",
+    "tags": ["Java", "Spring Boot", "REST", "Maven", "全栈"],
+    "date": "2026-03-24",
+    "readTime": 12,
+    "pinned": true,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "【接口摘要】对应仓库 blog-api；含 CORS、ApiResult、YAML、MockMvc 等。"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "相关文档",
+        "anchor": "docs"
+      },
+      {
+        "type": "list",
+        "ordered": false,
+        "items": [
+          "docs/前端学后端-REST与YAML配置.md",
+          "docs/REST-博客文章API.md"
+        ]
+      }
+    ]
+  }
+]

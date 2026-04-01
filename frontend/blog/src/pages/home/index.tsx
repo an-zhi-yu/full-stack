@@ -1,12 +1,13 @@
 /**
  * 首页（Home）
  * 布局：Hero → Stats → 精选文章 → 技术分类 → 最新文章 → 数据看板
- * 数据全部来自静态数据层 @/data
+ * 文章列表来自 Spring Boot 接口（PostsProvider）
  */
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Tag, Spin } from 'antd'
 import { categories } from '@/data/categories'
+import { usePostsContext } from '@/contexts/PostsContext'
 import { getRecentPosts, getFeaturedPosts } from '@/data/posts/index'
 import styles from './index.module.less'
 
@@ -14,10 +15,6 @@ import styles from './index.module.less'
 const DashboardCharts = lazy(() =>
   import('./components/DashboardCharts').then((m) => ({ default: m.DashboardCharts }))
 )
-
-// ── 静态数据 ──────────────────────────────────────────────────
-const recentPosts  = getRecentPosts(6)
-const featuredPosts = getFeaturedPosts()
 
 /** 标签名 → Ant Design Tag 颜色映射 */
 const tagColorMap: Record<string, string> = {
@@ -27,6 +24,10 @@ const tagColorMap: Record<string, string> = {
 }
 
 export default function Home() {
+  const { posts } = usePostsContext()
+  const recentPosts = useMemo(() => getRecentPosts(posts, 6), [posts])
+  const featuredPosts = useMemo(() => getFeaturedPosts(posts), [posts])
+
   return (
     <div className={styles.page}>
 
@@ -172,7 +173,7 @@ export default function Home() {
             <h2 className={styles.sectionTitle}>📈 数据看板</h2>
           </div>
           <Suspense fallback={<div style={{ textAlign: 'center', padding: '40px 0' }}><Spin /></div>}>
-            <DashboardCharts />
+            <DashboardCharts posts={posts} />
           </Suspense>
         </section>
 
