@@ -20,11 +20,11 @@ public class UserServiceImpl implements UserService {
 
   static {
     // 为了方便你测试登录，这里内置一些 demo 用户，密码都设为 123456
-    USER_DB.put("1", new UserEntity("1", "test1", "123456"));
-    USER_DB.put("2", new UserEntity("2", "test2", "123456"));
-    USER_DB.put("3", new UserEntity("3", "test3", "123456"));
-    USER_DB.put("4", new UserEntity("4", "test4", "123456"));
-    USER_DB.put("5", new UserEntity("5", "test5", "123456"));
+    USER_DB.put("1", UserEntity.builder().id("1").username("test1").password("123456").build());
+    USER_DB.put("2", UserEntity.builder().id("2").username("test2").password("123456").build());
+    USER_DB.put("3", UserEntity.builder().id("3").username("test3").password("123456").build());
+    USER_DB.put("4", UserEntity.builder().id("4").username("test4").password("123456").build());
+    USER_DB.put("5", UserEntity.builder().id("5").username("test5").password("123456").build());
   }
 
   /**
@@ -49,7 +49,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO register(UserRegisterDTO request) {
     String id = "user-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
-    UserEntity entity = new UserEntity(id, request.getUsername(), request.getPassword());
+    UserEntity entity = UserEntity.builder().id(id).username(request.getUsername()).password(request.getPassword())
+        .build();
     USER_DB.put(id, entity);
     return toDto(entity);
   }
@@ -116,6 +117,8 @@ public class UserServiceImpl implements UserService {
    * 内部实体 -> 对外 DTO（去掉 password）
    */
   private UserDTO toDto(UserEntity entity) {
-    return new UserDTO(entity.getId(), entity.getUsername());
+    return UserDTO.builder().id(entity.getId()).username(entity.getUsername()).email(entity.getEmail())
+        .phone(entity.getPhone()).address(entity.getAddress()).city(entity.getCity()).state(entity.getState())
+        .zip(entity.getZip()).country(entity.getCountry()).website(entity.getWebsite()).bio(entity.getBio()).build();
   }
 }

@@ -8,41 +8,22 @@ package com.anzhiyu.blogapi.entity;
  * - Service / Repository 内部使用 UserEntity 作为真正的数据结构
  *   （将来换成数据库表时，这个类就类似于一行记录的映射）
  */
+import lombok.Data;
+import lombok.Builder;
+
+@Data
+@Builder
 public class UserEntity {
   private String id;
   private String username;
   private String password;
-
-  public UserEntity() {}
-
-  public UserEntity(String id, String username, String password) {
-    this.id = id;
-    this.username = username;
-    this.password = password;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
+  private String email;
+  private String phone;
+  private String address;
+  private String city;
+  private String state;
+  private String zip;
+  private String country;
+  private String website;
+  private String bio;
 }
-
