@@ -111,6 +111,12 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        <!-- Lombok 自动生成 getter/setter/构造器，你现在必须要 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <!-- 构建配置 -->
