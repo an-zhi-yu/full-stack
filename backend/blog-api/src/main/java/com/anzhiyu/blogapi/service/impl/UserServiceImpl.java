@@ -93,7 +93,9 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public UserDTO login(String username, String password) {
-    return USER_DB.get(username);
+    return USER_DB.values().stream()
+        .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password)).findFirst()
+        .orElse(null);
   }
 
   /**

@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anzhiyu.blogapi.common.ApiResult;
+import com.anzhiyu.blogapi.common.util.JwtUtil;
 import com.anzhiyu.blogapi.dto.UserDTO;
+import com.anzhiyu.blogapi.dto.UserLoginDTO;
+import com.anzhiyu.blogapi.dto.UserLoginResponseDTO;
 import com.anzhiyu.blogapi.dto.UserRegisterDTO;
 import com.anzhiyu.blogapi.dto.UserUpdateDTO;
 import com.anzhiyu.blogapi.service.UserService;
@@ -22,9 +25,11 @@ import com.anzhiyu.blogapi.service.UserService;
 public class UserController {
 
   private final UserService userService;
+  private final JwtUtil jwtUtil;
 
-  public UserController(UserService userService) {
+  public UserController(UserService userService, JwtUtil jwtUtil) {
     this.userService = userService;
+    this.jwtUtil = jwtUtil;
   }
 
   /**
@@ -70,5 +75,21 @@ public class UserController {
   public ApiResult<String> deleteUser(@PathVariable String id) {
     userService.logout(id);
     return ApiResult.ok("注销成功");
+  }
+
+  /**
+   * 登录
+   * 
+   * @param request 登录请求
+   * @return 登录后的用户信息
+   */
+  @PostMapping("/login")
+  public ApiResult<UserLoginResponseDTO> login(@RequestBody UserLoginDTO request) {
+    UserDTO user = userService.login(request.username(), request.password());
+    if (user == null) {
+      return ApiResult.fail(401, "用户名或密码错误");
+    }
+    String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+    return ApiResult.ok(new UserLoginResponseDTO(token, user));
   }
 }
