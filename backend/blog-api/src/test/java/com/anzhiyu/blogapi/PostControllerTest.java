@@ -1,5 +1,6 @@
 package com.anzhiyu.blogapi;
 
+import com.anzhiyu.blogapi.common.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.junit.jupiter.api.Test;
@@ -29,9 +30,18 @@ class PostControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    private String authHeader() {
+        // 测试用的假用户，uid/username 随便填即可
+        String token = jwtUtil.generateToken("test-user-id", "test-user");
+        return "Bearer " + token;
+    }
+
     @Test
     void listPosts() throws Exception {
-        mockMvc.perform(get("/api/v1/posts"))
+        mockMvc.perform(get("/api/v1/posts").header("Authorization", authHeader()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.length()").value(19));
@@ -39,14 +49,14 @@ class PostControllerTest {
 
     @Test
     void listPostsByCategory() throws Exception {
-        mockMvc.perform(get("/api/v1/posts").param("categorySlug", "java"))
+        mockMvc.perform(get("/api/v1/posts").param("categorySlug", "java").header("Authorization", authHeader()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.length()").value(19));
     }
 
     @Test
     void getPostDetail() throws Exception {
-        mockMvc.perform(get("/api/v1/posts/java-spring-boot-blog-api"))
+        mockMvc.perform(get("/api/v1/posts/java-spring-boot-blog-api").header("Authorization", authHeader()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").exists())
                 .andExpect(jsonPath("$.data.content").isArray());
@@ -54,7 +64,7 @@ class PostControllerTest {
 
     @Test
     void getPostNotFound() throws Exception {
-        mockMvc.perform(get("/api/v1/posts/no-such-id"))
+        mockMvc.perform(get("/api/v1/posts/no-such-id").header("Authorization", authHeader()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(404));
     }
@@ -76,6 +86,7 @@ class PostControllerTest {
         String json = objectMapper.writeValueAsString(body);
 
         String createdJson = mockMvc.perform(post("/api/v1/posts")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -85,14 +96,17 @@ class PostControllerTest {
         String id = objectMapper.readTree(createdJson).path("data").path("id").asText();
 
         mockMvc.perform(put("/api/v1/posts/" + id)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(delete("/api/v1/posts/" + id))
+        mockMvc.perform(delete("/api/v1/posts/" + id)
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/api/v1/posts/" + id))
+        mockMvc.perform(get("/api/v1/posts/" + id)
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNotFound());
     }
 }

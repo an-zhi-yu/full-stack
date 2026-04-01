@@ -1,5 +1,6 @@
 package com.anzhiyu.blogapi;
 
+import com.anzhiyu.blogapi.common.util.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,9 +18,17 @@ class HelloControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    private String authHeader() {
+        String token = jwtUtil.generateToken("test-user-id", "test-user");
+        return "Bearer " + token;
+    }
+
     @Test
     void helloReturnsUnifiedJson() throws Exception {
-        mockMvc.perform(get("/api/hello"))
+        mockMvc.perform(get("/api/hello").header("Authorization", authHeader()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.message").value("ok"))
@@ -28,7 +37,7 @@ class HelloControllerTest {
 
     @Test
     void healthReturnsUnifiedJson() throws Exception {
-        mockMvc.perform(get("/api/health"))
+        mockMvc.perform(get("/api/health").header("Authorization", authHeader()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
                 .andExpect(jsonPath("$.data.status").value("UP"));

@@ -1,6 +1,5 @@
 package com.anzhiyu.blogapi.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,24 +8,23 @@ import java.util.UUID;
 import com.anzhiyu.blogapi.dto.UserDTO;
 import com.anzhiyu.blogapi.dto.UserRegisterDTO;
 import com.anzhiyu.blogapi.dto.UserUpdateDTO;
+import com.anzhiyu.blogapi.entity.UserEntity;
 import com.anzhiyu.blogapi.service.UserService;
 import com.anzhiyu.blogapi.common.util.BeanUtil;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-  // 模拟用户数据 static 是属于类本身的，而不是属于对象的 他每次new 都会有新的对象 所以用static，不会重置MOCK_USER
-  private final static Map<String, UserDTO> USER_DB = new HashMap<>();
+  // 模拟用户数据：内部用 UserEntity 存储（包含密码），对外只返回脱敏后的 UserDTO
+  private final static Map<String, UserEntity> USER_DB = new HashMap<>();
 
   static {
-    USER_DB.put("1", UserDTO.builder().id("1").username("test").build());
-    USER_DB.put("2", UserDTO.builder().id("2").username("test2").build());
-    USER_DB.put("3", UserDTO.builder().id("3").username("test3").build());
-    USER_DB.put("4", UserDTO.builder().id("4").username("test4").build());
-    USER_DB.put("5", UserDTO.builder().id("5").username("test5").build());
-    USER_DB.put("6", UserDTO.builder().id("6").username("test6").build());
-    USER_DB.put("7", UserDTO.builder().id("7").username("test7").build());
-    USER_DB.put("8", UserDTO.builder().id("8").username("test8").build());
+    // 为了方便你测试登录，这里内置一些 demo 用户，密码都设为 123456
+    USER_DB.put("1", new UserEntity("1", "test1", "123456"));
+    USER_DB.put("2", new UserEntity("2", "test2", "123456"));
+    USER_DB.put("3", new UserEntity("3", "test3", "123456"));
+    USER_DB.put("4", new UserEntity("4", "test4", "123456"));
+    USER_DB.put("5", new UserEntity("5", "test5", "123456"));
   }
 
   /**
@@ -36,10 +34,10 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public List<UserDTO> getAllUsers() {
-    // return new ArrayList<UserDTO>(USER_DB.values()); // 1 可变List 可以add/remove
-    // return new ArrayList<>(USER_DB.values()); //2 可变List 可以add/remove
-    return List.copyOf(USER_DB.values()); // 3 不可变List 不能add/remove
-    // return USER_DB.values().stream().toList(); //4 不可变List 不能add/remove
+    // 对外只返回不含密码的 UserDTO 列表
+    return USER_DB.values().stream()
+        .map(this::toDto)
+        .toList();
   }
 
   /**
@@ -51,9 +49,9 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO register(UserRegisterDTO request) {
     String id = "user-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
-    UserDTO user = UserDTO.builder().id(id).username(request.getUsername()).build();
-    USER_DB.put(id, user);
-    return user;
+    UserEntity entity = new UserEntity(id, request.getUsername(), request.getPassword());
+    USER_DB.put(id, entity);
+    return toDto(entity);
   }
 
   /**
@@ -65,12 +63,13 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public UserDTO update(String id, UserUpdateDTO request) {
-    UserDTO oldUser = getById(id);
-    if (oldUser == null) {
+    UserEntity entity = USER_DB.get(id);
+    if (entity == null) {
       throw new RuntimeException("User not found");
     }
-    BeanUtil.copyNonNullProperties(request, oldUser);
-    return oldUser;
+    // 这里用 BeanUtil 把 request 里的非空字段拷贝到 entity 上（字段名需对齐）
+    BeanUtil.copyNonNullProperties(request, entity);
+    return toDto(entity);
   }
 
   /**
@@ -81,7 +80,8 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public UserDTO getById(String id) {
-    return USER_DB.get(id);
+    UserEntity entity = USER_DB.get(id);
+    return entity == null ? null : toDto(entity);
   }
 
   /**
@@ -93,9 +93,11 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public UserDTO login(String username, String password) {
-    return USER_DB.values().stream()
-        .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password)).findFirst()
+    UserEntity entity = USER_DB.values().stream()
+        .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
+        .findFirst()
         .orElse(null);
+    return entity == null ? null : toDto(entity);
   }
 
   /**
@@ -108,5 +110,12 @@ public class UserServiceImpl implements UserService {
   public String logout(String id) {
     USER_DB.remove(id);
     return "ok";
+  }
+
+  /**
+   * 内部实体 -> 对外 DTO（去掉 password）
+   */
+  private UserDTO toDto(UserEntity entity) {
+    return new UserDTO(entity.getId(), entity.getUsername());
   }
 }
