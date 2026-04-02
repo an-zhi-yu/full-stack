@@ -179,16 +179,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         response.setContentType("application/json;charset=UTF-8");
         ApiResult<Void> body = ApiResult.fail(401, msg);
         response.getWriter().write(objectMapper.writeValueAsString(body));
-    }}
-
-    
-    
-        
-        
-        
-        
-    
-    
-    
-        
-    
+    }
+}

@@ -37,7 +37,7 @@ export default function LoginPage() {
       await register(values)
       message.success('注册成功，已为你自动登录')
       // 注册成功后沿用同一套登录流程拿 token
-      // await handleLogin(values)
+      await handleLogin(values)
     } catch (e: any) {
       message.error(e?.message ?? '注册失败')
       setLoading(false)

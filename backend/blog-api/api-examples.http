@@ -35,3 +35,19 @@ POST http://localhost:8080/api/learn/echo
 Content-Type: application/json
 
 { "name": "张三", "note": "hello" }
+
+### 注册（无需 token；用户名重复 → HTTP 409）
+POST http://localhost:8080/api/v1/user
+Content-Type: application/json
+
+{ "username": "newuser", "password": "123456" }
+
+### 登录（失败时 HTTP 200 + body.code=400，避免与鉴权 401 混淆）
+POST http://localhost:8080/api/v1/user/login
+Content-Type: application/json
+
+{ "username": "test1", "password": "123456" }
+
+### 删除用户（成功 204 无 body；不存在 404）
+DELETE http://localhost:8080/api/v1/user/1
+Authorization: Bearer <token>

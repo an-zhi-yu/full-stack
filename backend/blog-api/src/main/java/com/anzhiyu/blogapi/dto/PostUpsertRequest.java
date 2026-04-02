@@ -2,6 +2,10 @@ package com.anzhiyu.blogapi.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 /*
@@ -19,16 +23,35 @@ import java.util.List;
  *
  * 【withId】
  *   把「请求体 + 确定的 id」合成一个完整的 BlogPost，好交给 Repository 保存。
+ *
+ * 【@NotBlank / @NotNull 与 Controller 里的 @Valid】
+ *   类比：DTO 像 Zod schema，@Valid 像 .parse(body)；失败由全局异常处理成 HTTP 400，
+ *   不必在每个方法里手写 if (!title) return 400。
  */
 public record PostUpsertRequest(
+        @NotBlank(message = "title 不能为空")
         String title,
+
         String subtitle,
+
+        @NotBlank(message = "category 不能为空")
         String category,
+
+        @NotBlank(message = "categorySlug 不能为空")
         String categorySlug,
+
+        @NotNull(message = "tags 不能为 null")
         List<String> tags,
+
+        @NotBlank(message = "date 不能为空")
         String date,
+
+        @Min(value = 0, message = "readTime 不能为负")
         int readTime,
+
         Boolean pinned,
+
+        @NotNull(message = "content 不能为 null")
         JsonNode content
 ) {
 

@@ -1,6 +1,8 @@
 package com.anzhiyu.blogapi.config;
 
 import com.anzhiyu.blogapi.common.ApiResult;
+import com.anzhiyu.blogapi.common.exception.BusinessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,12 +15,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * 【400 从哪来？】本项目中常见两类：
  * <ul>
  *   <li>请求体不是合法 JSON、或类型对不上（如该数字却传了字符串）→ {@link HttpMessageNotReadableException}</li>
- *   <li>将来在参数上加 {@code @Valid} + jakarta 校验注解后，字段不合法 → {@link MethodArgumentNotValidException}</li>
+ *   <li>参数上加 {@code @Valid} + jakarta 校验注解后，字段不合法 → {@link MethodArgumentNotValidException}</li>
  * </ul>
- * 若团队约定「业务上永远 HTTP 200，只靠 body.code」也可以在这里改成 {@code ok().body(ApiResult.fail(400,...))}。
+ * 【404 / 409】→ {@link BusinessException} 子类，HTTP 状态与 body.code 一致，避免登录失败与「未登录」混用 401。
  */
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResult<Void>> handleBusiness(BusinessException ex) {
+        HttpStatus status = HttpStatus.resolve(ex.getApiCode());
+        if (status == null) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return ResponseEntity.status(status).body(ApiResult.fail(ex.getApiCode(), ex.getMessage()));
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResult<Void>> handleBadJson(HttpMessageNotReadableException ex) {

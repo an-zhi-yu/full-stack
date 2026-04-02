@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 /*
@@ -174,17 +176,20 @@ public class PostController {
      * 【400 参数错误谁处理？】见 {@code ApiExceptionHandler}：JSON 解析失败、将来 @Valid 校验失败 → HTTP
      * 400 + ApiResult。
      */
-    /** POST /api/v1/posts — body JSON 见 PostUpsertRequest；HTTP 201 Created */
+    /**
+     * POST /api/v1/posts —— 新建文章；HTTP 201。{@code @Valid} 会校验 {@link PostUpsertRequest} 上的注解。
+     */
     @PostMapping
-    public ResponseEntity<ApiResult<BlogPost>> create(@RequestBody PostUpsertRequest request) {
+    public ResponseEntity<ApiResult<BlogPost>> create(@Valid @RequestBody PostUpsertRequest request) {
         BlogPost created = postService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResult.ok(created));
     }
 
-    /** PUT /api/v1/posts/{id} — 整篇替换；没有该 id 则 404，写法和 get 一样用 Optional */
+    /** PUT /api/v1/posts/{id} —— 整篇替换；无该 id → 404。请求体同样走 {@code @Valid}。 */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResult<BlogPost>> replace(@PathVariable String id,
-            @RequestBody PostUpsertRequest request) {
+    public ResponseEntity<ApiResult<BlogPost>> replace(
+            @PathVariable String id,
+            @Valid @RequestBody PostUpsertRequest request) {
         return postService.replace(id, request)
                 .map(p -> ResponseEntity.ok(ApiResult.ok(p)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)

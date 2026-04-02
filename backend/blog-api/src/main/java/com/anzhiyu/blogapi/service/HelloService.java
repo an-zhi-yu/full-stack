@@ -1,23 +1,20 @@
 package com.anzhiyu.blogapi.service;
 
 import com.anzhiyu.blogapi.dto.HealthPayload;
-import org.springframework.stereotype.Service;
 
 /**
- * 欢迎语与健康检查等业务逻辑（示例很薄，仅演示 Controller 不堆业务）。
+ * Hello / 健康检查 —— 接口定义（与 {@link com.anzhiyu.blogapi.service.impl.HelloServiceImpl} 分离）。
+ *
+ * <p>为什么多此一举？和前端「先写 TypeScript 接口再写实现类」一样：Controller 只依赖接口，
+ * 以后换实现、写单测 Mock 都更轻松；与 {@link UserService}、{@link PostService} 风格统一。</p>
  */
-@Service
-public class HelloService {
+public interface HelloService {
 
-    public String greeting() {
-        return "Hello, Spring Boot 3 + Java 17!";
-    }
+  /** 给人看的欢迎语字符串 */
+  String greeting();
 
-    /**
-     * 健康检查载荷：返回<strong>定义好的类型</strong>，而不是 Map。
-     * 以后要加字段（如 version、db）只需改 {@link HealthPayload} 一处。
-     */
-    public HealthPayload healthPayload() {
-        return new HealthPayload("UP");
-    }
+  /**
+   * 探活用的结构化数据（比随便 {@code Map} 更稳），实际项目里可加 version、gitCommit 等字段。
+   */
+  HealthPayload healthPayload();
 }

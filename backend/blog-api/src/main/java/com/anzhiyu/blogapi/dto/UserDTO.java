@@ -1,30 +1,21 @@
 package com.anzhiyu.blogapi.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * 暴露给前端的用户视图：字段与 {@link com.anzhiyu.blogapi.entity.UserEntity} 对齐，但不包含
- * password。
- * MapStruct / JSON 序列化时自然不会出现密码字段。
+ * 暴露给前端的用户视图（与 {@link com.anzhiyu.blogapi.entity.UserEntity} 业务字段对齐，<strong>不含 password</strong>）。
+ * <p>MapStruct 从 Entity 映射到本 record；JSON 序列化后字段名与这里组件名一致（如 {@code username}）。</p>
+ * <p>代码里取值用 {@code user.id()}、{@code user.username()}，没有 {@code getId()}（那是 JavaBean / Lombok 习惯）。</p>
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserDTO {
-  private String id;
-  private String username;
-  private String email;
-  private String avatar;
-  private String phone;
-  private String address;
-  private String city;
-  private String state;
-  private String zip;
-  private String country;
-  private String website;
-  private String bio;
+public record UserDTO(
+    String id,
+    String username,
+    String email,
+    String avatar,
+    String phone,
+    String address,
+    String city,
+    String state,
+    String zip,
+    String country,
+    String website,
+    String bio) {
 }
