@@ -2,7 +2,7 @@ package com.anzhiyu.blogapi.vo;
 
 import java.util.List;
 
-public record PostContentBlockVo(
+public record PostContentBlockVO(
     String type, // 类型 heading, paragraph, code, list, tip, warning, table, divider
     Integer level, // 标题级别
     String text, // 文本
