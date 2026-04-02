@@ -7,15 +7,30 @@ spring:
   # 激活哪个 profile，就会额外加载 application-{profile}.yml
   profiles:
     active: dev
+  datasource:
+    # 指定 MySQL 连接参数 ， useUnicode 避免中文乱码，characterEncoding 指定字符编码，serverTimezone 指定时区
+    url: jdbc:mysql://localhost:3306/blog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai # 格式：jdbc:mysql://IP:端口/数据库名?参数1&参数2&参数3
+    username: root # MySQL 数据库用户名
+    password: zw070809 # MySQL 数据库密码
+    driver-class-name: com.mysql.cj.jdbc.Driver # MySQL 驱动
+  jpa:
+    hibernate:
+      ddl-auto: update # 更新数据库表结构，可选值：none、update、create、create-drop
+    show-sql: true # 是否打印 SQL 语句
+    properties:
+      hibernate:
+        format_sql: true # 是否格式化 SQL 语句
+        use_sql_comments: true # 是否使用 SQL 注释
+        dialect: org.hibernate.dialect.MySQL8Dialect # 指定 MySQL8 语法（固定）
 
 # ── 自定义业务配置（非 Spring 内置 key）────────────────────────
 # 前缀 app.demo 对应 Java 类 @ConfigurationProperties(prefix = "app.demo")
 # kebab-case（site-name）会自动绑定到 Java 的 siteName
 app:
   demo:
-    site-name: Blog API 学习项目
-    welcome-extra: 在 application.yml 或 application-dev.yml 里修改后重启服务生效
+    site-name: 博客系统 # 网站名称
+    welcome-extra: 在 application.yml 或 application-dev.yml 里修改后重启服务生效 # 欢迎语
   # JWT 配置
   jwt:
     secret: "this_is_a_demo_secret_change_me_123456" # 真实项目放更长、更随机，且不进仓库
-    expire-minutes: 120        # Token 有效期（分钟）
+    expire-minutes: 120 # Token 有效期（分钟）
