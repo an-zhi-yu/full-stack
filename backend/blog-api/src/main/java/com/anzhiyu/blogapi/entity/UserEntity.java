@@ -1,5 +1,12 @@
 package com.anzhiyu.blogapi.entity;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,9 +29,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// 实体类注解
+@Entity
+// 表注解
+@Table(name = "t_user")
 public class UserEntity {
 
-  private String id;
+  // 主键注解
+  @Id
+  // 主键生成策略注解 IDENTITY 表示使用数据库自增策略 对应 MySQL AUTO_INCREMENT
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
   private String username;
   private String password;
   private String avatar;
@@ -37,4 +53,12 @@ public class UserEntity {
   private String country;
   private String website;
   private String bio;
+  // 扩展字段
+  private String role;
+  private Integer status;
+  // 审记字段
+  private LocalDateTime createdTime;
+  private LocalDateTime updatedTime;
+  private Integer isDeleted;
+  private Integer version;
 }
