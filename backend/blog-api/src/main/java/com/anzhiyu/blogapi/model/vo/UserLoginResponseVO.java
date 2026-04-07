@@ -1,4 +1,4 @@
-package com.anzhiyu.blogapi.vo;
+package com.anzhiyu.blogapi.model.vo;
 
 /**
  * 登录成功响应：JWT + 用户信息（无密码）。

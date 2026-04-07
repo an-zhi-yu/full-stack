@@ -10,17 +10,16 @@ import org.springframework.stereotype.Service;
 import com.anzhiyu.blogapi.common.exception.ConflictException;
 import com.anzhiyu.blogapi.common.exception.ResourceNotFoundException;
 import com.anzhiyu.blogapi.common.util.BeanUtil;
-import com.anzhiyu.blogapi.dto.UserLoginDTO;
-import com.anzhiyu.blogapi.dto.UserRegisterDTO;
-import com.anzhiyu.blogapi.dto.UserUpdateDTO;
-import com.anzhiyu.blogapi.entity.UserEntity;
 import com.anzhiyu.blogapi.mapper.UserMapper;
+import com.anzhiyu.blogapi.model.dto.UserLoginDTO;
+import com.anzhiyu.blogapi.model.dto.UserRegisterDTO;
+import com.anzhiyu.blogapi.model.dto.UserUpdateDTO;
+import com.anzhiyu.blogapi.model.entity.UserEntity;
+import com.anzhiyu.blogapi.model.vo.UserInfoVO;
+import com.anzhiyu.blogapi.model.vo.UserListVO;
 import com.anzhiyu.blogapi.repository.UserRepository;
 import com.anzhiyu.blogapi.service.UserService;
-import com.anzhiyu.blogapi.vo.UserInfoVO;
-import com.anzhiyu.blogapi.vo.UserListVO;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -36,19 +35,11 @@ public class UserServiceJpaImpl implements UserService {
     this.userRepository = userRepository;
   }
 
-  // 初始化Demo用户密码
-  // @PostConstruct
-  // private void initDemoUserPasswords() {
-  // for (UserEntity user : userRepository.findAll()) {
-  // user.setPassword(passwordEncoder.encode(user.getPassword()));
-  // }
-  // }
-
   // 分页查询用户
   @Override
   public Page<UserListVO> listUsers(Pageable pageable) {
     Page<UserEntity> page = userRepository.findAll(pageable);
-    return page.map(userMapper::toVO);
+    return page.map(item -> userMapper.toListVO(item));
   }
 
   // 注册用户
@@ -71,8 +62,9 @@ public class UserServiceJpaImpl implements UserService {
   // 根据ID查询用户
   @Override
   public Optional<UserInfoVO> getById(Long id) {
-    return userRepository.findById(id)
-        .map(userMapper::toDto);
+    UserEntity entity = userRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("用户不存在: " + id));
+    return Optional.of(userMapper.toDto(entity));
   }
 
   // 更新用户
@@ -85,6 +77,7 @@ public class UserServiceJpaImpl implements UserService {
     if (dto.password() != null && !dto.password().isBlank()) {
       entity.setPassword(passwordEncoder.encode(dto.password()));
     }
+    userRepository.save(entity);
     return userMapper.toDto(entity);
   }
 

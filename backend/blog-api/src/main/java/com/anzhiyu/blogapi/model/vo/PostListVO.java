@@ -1,20 +1,17 @@
-package com.anzhiyu.blogapi.vo;
+package com.anzhiyu.blogapi.model.vo;
 
 import java.util.List;
 
-public record PostDetailVO(
+public record PostListVO(
         Long id,
         String title,
         String subtitle,
         String category,
         String categorySlug,
         List<String> tags,
-        List<PostContentBlockVO> content,
         String date,
         Integer readTime,
         Integer pinned,
         Integer viewCount,
-        Integer likeCount,
-        Boolean likedByCurrentUser) {
-
+        Integer likeCount) {
 }

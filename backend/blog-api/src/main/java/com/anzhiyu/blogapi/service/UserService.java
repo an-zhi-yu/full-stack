@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.anzhiyu.blogapi.dto.UserLoginDTO;
-import com.anzhiyu.blogapi.vo.UserInfoVO;
-import com.anzhiyu.blogapi.vo.UserListVO;
-import com.anzhiyu.blogapi.dto.UserRegisterDTO;
-import com.anzhiyu.blogapi.dto.UserUpdateDTO;
+import com.anzhiyu.blogapi.model.dto.UserLoginDTO;
+import com.anzhiyu.blogapi.model.dto.UserRegisterDTO;
+import com.anzhiyu.blogapi.model.dto.UserUpdateDTO;
+import com.anzhiyu.blogapi.model.vo.UserInfoVO;
+import com.anzhiyu.blogapi.model.vo.UserListVO;
 
 /**
  * 用户业务契约（接口）。

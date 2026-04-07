@@ -1,31 +1,30 @@
 package com.anzhiyu.blogapi.service;
 
-import com.anzhiyu.blogapi.dto.BlogPost;
-import com.anzhiyu.blogapi.dto.BlogPostDetailDTO;
-import com.anzhiyu.blogapi.dto.PostSummary;
-import com.anzhiyu.blogapi.dto.PostUpsertRequest;
+import com.anzhiyu.blogapi.model.dto.PostUpsertRequestDTO;
+import com.anzhiyu.blogapi.model.vo.PostDetailVO;
+import com.anzhiyu.blogapi.model.vo.PostListVO;
 
-import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * 文章业务接口：Controller 只依赖接口，实现类在 {@code service.impl}。
  */
 public interface PostService {
 
-  List<PostSummary> listSummaries(String categorySlug);
+  Page<PostListVO> listSummaries(String categorySlug, Pageable pageable);
 
-  Optional<BlogPostDetailDTO> getDetailById(String id, String uidOrNull);
+  Optional<Long> recordView(Long postId);
 
-  Optional<Long> recordView(String postId);
+  Optional<PostEngagementStore.LikeToggleResult> toggleLike(Long postId, String userId);
 
-  Optional<PostEngagementStore.LikeToggleResult> toggleLike(String postId, String userId);
+  Optional<PostDetailVO> getById(Long id);
 
-  Optional<BlogPost> getById(String id);
+  PostDetailVO create(PostUpsertRequestDTO request);
 
-  BlogPost create(PostUpsertRequest request);
+  Optional<PostDetailVO> replace(Long id, PostUpsertRequestDTO request);
 
-  Optional<BlogPost> replace(String id, PostUpsertRequest request);
-
-  boolean delete(String id);
+  boolean delete(Long id);
 }
