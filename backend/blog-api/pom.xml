@@ -176,6 +176,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <!-- 必须加！Hibernate JSON 类型支持 -->
+        <!-- 对应 Spring Boot 3.2.x / Hibernate 6.4 -->
+        <dependency>
+            <groupId>com.vladmihalcea</groupId>
+            <artifactId>hibernate-types-60</artifactId>
+            <version>2.21.1</version> <!-- 这是正确的稳定版版本号 -->
+        </dependency> 
+
     </dependencies>
 
     <!-- 构建配置 -->
@@ -189,6 +197,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <!-- MapStruct 映射到 Java record 时依赖构造器参数名；无此选项易出现「无可用构造器」 -->
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>

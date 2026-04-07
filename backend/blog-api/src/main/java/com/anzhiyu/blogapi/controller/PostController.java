@@ -1,14 +1,15 @@
 package com.anzhiyu.blogapi.controller;
 
 import com.anzhiyu.blogapi.common.ApiResult;
-import com.anzhiyu.blogapi.dto.BlogPost;
-import com.anzhiyu.blogapi.dto.BlogPostDetailDTO;
-import com.anzhiyu.blogapi.dto.PostLikeResponse;
-import com.anzhiyu.blogapi.dto.PostSummary;
-import com.anzhiyu.blogapi.dto.PostUpsertRequest;
-import com.anzhiyu.blogapi.dto.PostViewResponse;
+import com.anzhiyu.blogapi.model.dto.PostUpsertRequestDTO;
+import com.anzhiyu.blogapi.model.vo.PostDetailVO;
+import com.anzhiyu.blogapi.model.vo.PostListVO;
+import com.anzhiyu.blogapi.service.PostEngagementStore;
 import com.anzhiyu.blogapi.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -89,8 +90,8 @@ public class PostController {
      * 再里面是 data（BlogPost）。最终 Jackson 只把「最外层返回值」整体转成一份 JSON 响应体。
      */
     @GetMapping // 等价于 @GetMapping("")：映射到「当前前缀」本身，即 /api/v1/posts
-    public ApiResult<List<PostSummary>> list(@RequestParam(required = false) String categorySlug) {
-        return ApiResult.ok(postService.listSummaries(categorySlug));
+    public ApiResult<Page<PostListVO>> list(@RequestParam(required = false) String categorySlug, Pageable pageable) {
+        return ApiResult.ok(postService.listSummaries(categorySlug, Pageable.unpaged()));
     }
 
     /*
@@ -127,7 +128,7 @@ public class PostController {
      * 过滤器对 GET 详情做「可选 JWT」：带合法 token 时 uid 非空，用于 likedByCurrentUser。
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResult<BlogPostDetailDTO>> get(@PathVariable String id, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<PostDetailVO>> get(@PathVariable String id, HttpServletRequest request) {
         String uid = (String) request.getAttribute("uid");
         return postService.getDetailById(id, uid)
                 .map(p -> ResponseEntity.ok(ApiResult.ok(p)))
@@ -140,9 +141,9 @@ public class PostController {
      * 若 id 不存在 → 404。
      */
     @PostMapping("/{id}/view")
-    public ResponseEntity<ApiResult<PostViewResponse>> recordView(@PathVariable String id) {
+    public ResponseEntity<ApiResult<Long>> recordView(@PathVariable Long id) {
         return postService.recordView(id)
-                .map(n -> ResponseEntity.ok(ApiResult.ok(new PostViewResponse(n))))
+                .map(n -> ResponseEntity.ok(ApiResult.ok(n)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ApiResult.fail(404, "文章不存在: " + id)));
     }
@@ -151,15 +152,15 @@ public class PostController {
      * 切换点赞：需登录，uid 来自 JWT（过滤器在非白名单路径已校验）。
      */
     @PostMapping("/{id}/like")
-    public ResponseEntity<ApiResult<PostLikeResponse>> toggleLike(
-            @PathVariable String id,
+    public ResponseEntity<ApiResult<PostEngagementStore.LikeToggleResult>> toggleLike(
+            @PathVariable Long id,
             HttpServletRequest request) {
         String uid = (String) request.getAttribute("uid");
         if (uid == null || uid.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResult.fail(401, "点赞需先登录"));
         }
-        return postService.toggleLike(id, uid)
+        return postService.toggleLike(id), uid)
                 .map(r -> ResponseEntity.ok(ApiResult.ok(
                         new PostLikeResponse(r.likeCount(), r.likedByCurrentUser()))))
 
@@ -177,19 +178,20 @@ public class PostController {
      * 400 + ApiResult。
      */
     /**
-     * POST /api/v1/posts —— 新建文章；HTTP 201。{@code @Valid} 会校验 {@link PostUpsertRequest} 上的注解。
+     * POST /api/v1/posts —— 新建文章；HTTP 201。{@code @Valid} 会校验
+     * {@link PostUpsertRequestDTO} 上的注解。
      */
     @PostMapping
-    public ResponseEntity<ApiResult<BlogPost>> create(@Valid @RequestBody PostUpsertRequest request) {
-        BlogPost created = postService.create(request);
+    public ResponseEntity<ApiResult<PostDetailVO>> create(@Valid @RequestBody PostUpsertRequestDTO request) {
+        PostDetailVO created = postService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResult.ok(created));
     }
 
     /** PUT /api/v1/posts/{id} —— 整篇替换；无该 id → 404。请求体同样走 {@code @Valid}。 */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResult<BlogPost>> replace(
-            @PathVariable String id,
-            @Valid @RequestBody PostUpsertRequest request) {
+    public ResponseEntity<ApiResult<PostDetailVO>> replace(
+            @PathVariable Long id,
+            @Valid @RequestBody PostUpsertRequestDTO request) {
         return postService.replace(id, request)
                 .map(p -> ResponseEntity.ok(ApiResult.ok(p)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -198,7 +200,7 @@ public class PostController {
 
     /** DELETE /api/v1/posts/{id} — 成功 204 无 body；找不到 404 */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!postService.delete(id)) {
             return ResponseEntity.notFound().build();
         }

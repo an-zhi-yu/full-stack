@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anzhiyu.blogapi.common.ApiResult;
 import com.anzhiyu.blogapi.common.util.JwtUtil;
-import com.anzhiyu.blogapi.dto.UserLoginDTO;
-import com.anzhiyu.blogapi.dto.UserRegisterDTO;
-import com.anzhiyu.blogapi.dto.UserUpdateDTO;
+import com.anzhiyu.blogapi.model.dto.UserLoginDTO;
+import com.anzhiyu.blogapi.model.dto.UserRegisterDTO;
+import com.anzhiyu.blogapi.model.dto.UserUpdateDTO;
+import com.anzhiyu.blogapi.model.vo.UserInfoVO;
+import com.anzhiyu.blogapi.model.vo.UserListVO;
+import com.anzhiyu.blogapi.model.vo.UserLoginResponseVO;
 import com.anzhiyu.blogapi.service.UserService;
-import com.anzhiyu.blogapi.vo.UserInfoVO;
-import com.anzhiyu.blogapi.vo.UserListVO;
-import com.anzhiyu.blogapi.vo.UserLoginResponseVO;
 
 import jakarta.validation.Valid;
 

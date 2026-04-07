@@ -3,8 +3,9 @@ package com.anzhiyu.blogapi.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
-import com.anzhiyu.blogapi.entity.UserEntity;
-import com.anzhiyu.blogapi.vo.UserInfoVO;
+import com.anzhiyu.blogapi.model.entity.UserEntity;
+import com.anzhiyu.blogapi.model.vo.UserInfoVO;
+import com.anzhiyu.blogapi.model.vo.UserListVO;
 
 /**
  * Entity → 对外 DTO 的映射（编译期生成实现类，类似 TS 里写一个纯函数 + 类型推导）。
@@ -19,13 +20,15 @@ import com.anzhiyu.blogapi.vo.UserInfoVO;
  * <p>
  * {@code componentModel = "spring"}：生成带 {@code @Component} 的实现类，可被
  * {@code @Autowired} / 构造器注入，和别的 Service 一样交给 IoC 管理。
+ * {@code unmappedTargetPolicy = ReportingPolicy.IGNORE}：忽略未映射的属性，避免编译错误。
  * </p>
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-
   /**
    * 单条转换：内部 {@link UserEntity} → 接口返回 {@link UserInfoVO}（无 password）。
    */
   UserInfoVO toDto(UserEntity entity);
+
+  UserListVO toListVO(UserEntity entity);
 }
