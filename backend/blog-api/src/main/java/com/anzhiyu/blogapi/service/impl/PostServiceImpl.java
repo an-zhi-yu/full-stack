@@ -1,6 +1,5 @@
 package com.anzhiyu.blogapi.service.impl;
 
-import com.anzhiyu.blogapi.common.exception.ResourceNotFoundException;
 import com.anzhiyu.blogapi.common.util.BeanUtil;
 import com.anzhiyu.blogapi.mapper.PostMapper;
 import com.anzhiyu.blogapi.model.dto.PostUpsertRequestDTO;
@@ -75,16 +74,53 @@ public class PostServiceImpl implements PostService {
   }
 
   /**
-   * 根据ID查询文章
-   * 
-   * @param id
-   * @return
+   * 根据主键查详情。
+   *
+   * <p>
+   * <strong>为什么不能直接 {@code return postMapper.toDetailVO(entity)}？</strong>
+   * {@link com.anzhiyu.blogapi.mapper.PostMapper#toDetailVO(PostEntity)} 只做「实体字段 → VO」的静态拷贝：
+   * 浏览量/点赞数在库里有一份（{@code PostEntity}），但本项目的 {@link PostEngagementStore} 还在内存里维护了
+   * 上报浏览、点赞切换的计数；详情里展示的数值需要把两边<strong>合并</strong>（否则前端会看到与「刚点过赞/刚刷过浏览」不一致）。
+   * 另外 {@code likedByCurrentUser} 依赖<strong>当前请求的 uid</strong>（JWT），实体里没有这个信息，必须在 Service 里用
+   * {@code engagement.isLikedBy(postId, uid)} 算出来，再 {@code new PostDetailVO(...)} 覆盖 Mapper 里的占位值。
+   * </p>
+   *
+   * <p>
+   * {@link #create} / {@link #replace} 仍可直接 {@code toDetailVO}：那是写操作返回的「当前库内快照」，与「带内存态互动的读详情」场景不同；
+   * 若你希望创建后立即看到与详情接口完全一致的计数，也可以再抽一层合并逻辑（当前未做）。
+   * </p>
    */
   @Override
-  public Optional<PostDetailVO> get(Long id, String uid) {
-    PostEntity post = postRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("文章不存在: " + id));
-    return Optional.of(postMapper.toDetailVO(post));
+  public Optional<PostDetailVO> getDetailById(Long id, String uid) {
+    return postRepository.findById(id).map(entity -> toDetailWithEngagement(entity, uid));
+  }
+
+  /**
+   * 先走 MapStruct 得到标题、正文等「纯库表字段」，再叠加 {@link PostEngagementStore} 与当前用户点赞态。
+   */
+  private PostDetailVO toDetailWithEngagement(PostEntity entity, String uid) {
+    PostDetailVO base = postMapper.toDetailVO(entity);
+    long extraViews = engagement.getViewCount(entity.getId());
+    long memLikes = engagement.getLikeCount(entity.getId());
+    int baseView = entity.getViewCount() != null ? entity.getViewCount() : 0;
+    int baseLike = entity.getLikeCount() != null ? entity.getLikeCount() : 0;
+    int viewCount = (int) Math.min(Integer.MAX_VALUE, (long) baseView + extraViews);
+    int likeCount = (int) Math.max(baseLike, memLikes);
+    boolean liked = uid != null && !uid.isBlank() && engagement.isLikedBy(entity.getId(), uid);
+    return new PostDetailVO(
+        base.id(),
+        base.title(),
+        base.subtitle(),
+        base.category(),
+        base.categorySlug(),
+        base.tags(),
+        base.content(),
+        base.date(),
+        base.readTime(),
+        base.pinned(),
+        viewCount,
+        likeCount,
+        liked);
   }
 
   /**
@@ -119,11 +155,11 @@ public class PostServiceImpl implements PostService {
   @Override
   @Transactional
   public Optional<PostDetailVO> replace(Long id, PostUpsertRequestDTO dto) {
-    PostEntity entity = postRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("文章不存在: " + id));
-    BeanUtil.copyNonNullProperties(dto, entity);
-    postRepository.save(entity);
-    return Optional.of(postMapper.toDetailVO(entity));
+    return postRepository.findById(id).map(entity -> {
+      BeanUtil.copyNonNullProperties(dto, entity);
+      postRepository.save(entity);
+      return postMapper.toDetailVO(entity);
+    });
   }
 
   /**
@@ -135,10 +171,14 @@ public class PostServiceImpl implements PostService {
   @Override
   @Transactional
   public boolean delete(Long id) {
-    PostEntity entity = postRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("文章不存在: " + id));
-    entity.setIsDeleted(1);
-    postRepository.save(entity);
-    return true;
+    return postRepository
+        .findById(id)
+        .map(
+            entity -> {
+              entity.setIsDeleted(1);
+              postRepository.save(entity);
+              return true;
+            })
+        .orElse(false);
   }
 }

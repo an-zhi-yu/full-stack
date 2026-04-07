@@ -20,7 +20,8 @@ public interface PostService {
 
   Optional<PostEngagementStore.LikeToggleResult> toggleLike(Long postId, String userId);
 
-  Optional<PostDetailVO> getById(Long id);
+  /** uid 可为 null（未登录）；用于计算 likedByCurrentUser。 */
+  Optional<PostDetailVO> getDetailById(Long id, String uid);
 
   PostDetailVO create(PostUpsertRequestDTO request);
 

@@ -3,8 +3,8 @@ package com.anzhiyu.blogapi.controller;
 import com.anzhiyu.blogapi.common.ApiResult;
 import com.anzhiyu.blogapi.model.dto.PostUpsertRequestDTO;
 import com.anzhiyu.blogapi.model.vo.PostDetailVO;
+import com.anzhiyu.blogapi.model.vo.PostLikeResponseVO;
 import com.anzhiyu.blogapi.model.vo.PostListVO;
-import com.anzhiyu.blogapi.service.PostEngagementStore;
 import com.anzhiyu.blogapi.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-
-import java.util.List;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -91,7 +89,7 @@ public class PostController {
      */
     @GetMapping // 等价于 @GetMapping("")：映射到「当前前缀」本身，即 /api/v1/posts
     public ApiResult<Page<PostListVO>> list(@RequestParam(required = false) String categorySlug, Pageable pageable) {
-        return ApiResult.ok(postService.listSummaries(categorySlug, Pageable.unpaged()));
+        return ApiResult.ok(postService.listSummaries(categorySlug, pageable));
     }
 
     /*
@@ -128,7 +126,7 @@ public class PostController {
      * 过滤器对 GET 详情做「可选 JWT」：带合法 token 时 uid 非空，用于 likedByCurrentUser。
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResult<PostDetailVO>> get(@PathVariable String id, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<PostDetailVO>> get(@PathVariable Long id, HttpServletRequest request) {
         String uid = (String) request.getAttribute("uid");
         return postService.getDetailById(id, uid)
                 .map(p -> ResponseEntity.ok(ApiResult.ok(p)))
@@ -152,7 +150,7 @@ public class PostController {
      * 切换点赞：需登录，uid 来自 JWT（过滤器在非白名单路径已校验）。
      */
     @PostMapping("/{id}/like")
-    public ResponseEntity<ApiResult<PostEngagementStore.LikeToggleResult>> toggleLike(
+    public ResponseEntity<ApiResult<PostLikeResponseVO>> toggleLike(
             @PathVariable Long id,
             HttpServletRequest request) {
         String uid = (String) request.getAttribute("uid");
@@ -160,10 +158,9 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResult.fail(401, "点赞需先登录"));
         }
-        return postService.toggleLike(id), uid)
+        return postService.toggleLike(id, uid)
                 .map(r -> ResponseEntity.ok(ApiResult.ok(
-                        new PostLikeResponse(r.likeCount(), r.likedByCurrentUser()))))
-
+                        new PostLikeResponseVO(r.likeCount(), r.likedByCurrentUser()))))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ApiResult.fail(404, "文章不存在: " + id)));
     }
